@@ -1,6 +1,10 @@
 import { Graph } from "../src/graph";
 import { json } from "../src/json";
 
+function rw(g: Graph): Graph {
+  return json.read(json.write(g));
+}
+
 describe("json", () => {
   it("preserves the graph options", () => {
     expect(rw(new Graph({ directed: true })).directed).toBe(true);
@@ -56,7 +60,3 @@ describe("json", () => {
       .toBe("parent");
   });
 });
-
-function rw(g: Graph): Graph {
-  return json.read(json.write(g));
-}

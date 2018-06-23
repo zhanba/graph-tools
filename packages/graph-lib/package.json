@@ -15,7 +15,8 @@
     "lint:fix": "tslint --project tsconfig.json --fix --format codeFrame",
     "test": "jest",
     "ci": "jest && cat ./coverage/lcov.info | coveralls",
-    "bench": "ts-node src/bench.ts"
+    "bench": "ts-node src/bench.ts",
+    "doc": "typedoc --out ./doc"
   },
   "repository": {
     "type": "git",
@@ -51,6 +52,7 @@
     "ts-jest": "^22.0.1",
     "ts-node": "^5.0.0",
     "tslint": "^5.8.0",
+    "typedoc": "^0.11.1",
     "typescript": "^2.6.1"
   },
   "dependencies": {

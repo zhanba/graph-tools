@@ -1,7 +1,7 @@
 import { Graph } from "../graph";
 import { IEdgeFn, IWeightFn } from "./dijkstra";
 
-export interface IResult {
+interface IResult {
   [v: string]: {
     [v: string]: {
       distance: number;
