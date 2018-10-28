@@ -10,7 +10,7 @@ export type KeyValue = string | number;
 
 export type NameValue = string | number;
 
-export interface IGraphConstructor {
+export interface IGraphOptions {
   directed?: boolean;
   multigraph?: boolean;
   compound?: boolean;
@@ -103,7 +103,7 @@ class Graph {
   /* Number of edges in the graph. Should only be changed by the implementation. */
   private edgeCountNumber = 0;
 
-  constructor(opt?: IGraphConstructor) {
+  constructor(opt?: IGraphOptions) {
     this.directed = (opt && opt.directed !== undefined) ? opt.directed : true;
     this.multigraph = (opt && opt.multigraph !== undefined) ? opt.multigraph : false;
     this.compound = (opt && opt.compound !== undefined) ? opt.compound : false;
