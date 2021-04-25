@@ -1,10 +1,19 @@
 {
-	"private": true,
-	"workspaces": [
-		"packages/*"
-	],
-	"devDependencies": {
-		"@umijs/fabric": "^2.5.7",
-		"lerna": "^4.0.0"
-	}
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "father build",
+    "dev": "father doc dev",
+    "build:doc": "father doc build",
+    "deploy": "father doc deploy",
+    "test": "father test",
+    "coverage": "father test --coverage"
+  },
+  "devDependencies": {
+    "@umijs/fabric": "^2.5.7",
+    "father": "^2.30.4",
+    "lerna": "^4.0.0"
+  }
 }
