@@ -10,7 +10,7 @@
     "deploy": "father doc deploy",
     "test": "father test",
     "coverage": "father test --coverage",
-    "lint": "father lint"
+    "lint": "eslint . --ext .ts"
   },
   "devDependencies": {
     "@umijs/fabric": "^2.5.7",

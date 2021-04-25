@@ -115,7 +115,7 @@ class PriorityQueue {
     const index = this.keyIndices[key];
     if (priority > this.arr[index].priority) {
       throw new Error(
-        `${'New priority is greater than current priority. ' + 'Key: '}${key} Old: ${
+        `${'New priority is greater than current priority. Key: '}${key} Old: ${
           this.arr[index].priority
         } New: ${priority}`,
       );
