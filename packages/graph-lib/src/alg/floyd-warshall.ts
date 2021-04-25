@@ -1,5 +1,5 @@
-import { Graph } from "../graph";
-import { IEdgeFn, IWeightFn } from "./dijkstra";
+import { Graph } from '../graph';
+import { IEdgeFn, IWeightFn } from './dijkstra';
 
 interface IResult {
   [v: string]: {
@@ -16,7 +16,11 @@ function floydWarshall(g: Graph, weightFn?: IWeightFn, edgeFn?: IEdgeFn) {
   return runFloydWarshall(g, weightFn, edgeFn);
 }
 
-function runFloydWarshall(g: Graph, weightFn = DEFAULT_WEIGHT_FUNC, edgeFn = (v: string) => g.outEdges(v)) {
+function runFloydWarshall(
+  g: Graph,
+  weightFn = DEFAULT_WEIGHT_FUNC,
+  edgeFn = (v: string) => g.outEdges(v),
+) {
   const results: IResult = {};
   const nodes = g.nodes();
 

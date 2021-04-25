@@ -1,6 +1,6 @@
-import { Graph, IEdgeObj } from "../graph";
-import { PriorityQueue } from "../priority-queue";
-import { IWeightFn } from "./dijkstra";
+import { Graph, IEdgeObj } from '../graph';
+import { PriorityQueue } from '../priority-queue';
+import { IWeightFn } from './dijkstra';
 
 function prim(g: Graph, weightFunc: IWeightFn) {
   const result = new Graph();
@@ -38,7 +38,7 @@ function prim(g: Graph, weightFunc: IWeightFn) {
     if (Reflect.has(parents, v)) {
       result.setEdge(v, parents[v]);
     } else if (init) {
-      throw new Error("Input graph is not connected: " + g);
+      throw new Error('Input graph is not connected: ' + g);
     } else {
       init = true;
     }

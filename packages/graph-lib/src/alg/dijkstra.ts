@@ -1,8 +1,8 @@
-import { Graph, IEdgeObj } from "../graph";
-import { PriorityQueue } from "../priority-queue";
+import { Graph, IEdgeObj } from '../graph';
+import { PriorityQueue } from '../priority-queue';
 
 export interface IEntry {
-  [key: string]: number|string;
+  [key: string]: number | string;
   distance: number;
 }
 
@@ -16,22 +16,24 @@ export interface IDijkstraAllResult {
 
 export type IWeightFn = (edge: IEdgeObj) => number;
 
-export type IEdgeFn = (v: string) => IEdgeObj[]|undefined;
+export type IEdgeFn = (v: string) => IEdgeObj[] | undefined;
 
 const DEFAULT_WEIGHT_FUNC = () => 1;
 
-function dijkstra(g: Graph, source: string, weightFn: IWeightFn = DEFAULT_WEIGHT_FUNC,
-                  edgeFn = ((v: string) => g.outEdges(v))): IDijkstraResult {
+function dijkstra(
+  g: Graph,
+  source: string,
+  weightFn: IWeightFn = DEFAULT_WEIGHT_FUNC,
+  edgeFn = (v: string) => g.outEdges(v),
+): IDijkstraResult {
   return runDijkstra(g, String(source), weightFn, edgeFn);
 }
 
-function runDijkstra(g: Graph, source: string,
-                     weightFn: IWeightFn,
-                     edgeFn: IEdgeFn) {
+function runDijkstra(g: Graph, source: string, weightFn: IWeightFn, edgeFn: IEdgeFn) {
   const results: IDijkstraResult = {};
   const pq = new PriorityQueue();
-  let v: string = "";
-  let vEntry: IEntry = {distance: 0};
+  let v: string = '';
+  let vEntry: IEntry = { distance: 0 };
 
   const updateNeighbors = (edge: IEdgeObj) => {
     const w = edge.v !== v ? edge.v : edge.w;
@@ -40,8 +42,13 @@ function runDijkstra(g: Graph, source: string,
     const distance = vEntry.distance + weight;
 
     if (weight < 0) {
-      throw new Error("dijkstra does not allow negative edge weights. " +
-                      "Bad edge: " + edge + " Weight: " + weight);
+      throw new Error(
+        'dijkstra does not allow negative edge weights. ' +
+          'Bad edge: ' +
+          edge +
+          ' Weight: ' +
+          weight,
+      );
     }
 
     if (distance < wEntry.distance) {

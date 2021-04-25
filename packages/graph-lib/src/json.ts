@@ -1,23 +1,23 @@
-import { Graph, KeyValue, LabelValue } from "./graph";
+import { Graph, KeyValue, LabelValue } from './graph';
 
 export interface INodeObj {
   v: KeyValue;
   value: LabelValue;
-  parent: KeyValue|undefined;
+  parent: KeyValue | undefined;
 }
 
 export interface IEdgeObj {
   v: string;
   w: string;
-  name: string|undefined;
+  name: string | undefined;
   value: LabelValue;
 }
 
 export interface IJsonObj {
   options: {
-    directed: boolean,
-    multigraph: boolean,
-    compound: boolean,
+    directed: boolean;
+    multigraph: boolean;
+    compound: boolean;
   };
   nodes: INodeObj[];
   edges: IEdgeObj[];
@@ -33,7 +33,7 @@ function write(g: Graph): IJsonObj {
       directed: g.directed,
       multigraph: g.multigraph,
     },
-    value: typeof g.graph === "object" ? Object.assign({}, g.graph()) : g.graph(),
+    value: typeof g.graph === 'object' ? Object.assign({}, g.graph()) : g.graph(),
   };
 
   return jsonObj;

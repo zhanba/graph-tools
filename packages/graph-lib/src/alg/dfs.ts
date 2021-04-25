@@ -1,4 +1,4 @@
-import { Graph } from "../graph";
+import { Graph } from '../graph';
 
 /*
  * A helper that preforms a pre- or post-order traversal on the input graph
@@ -8,9 +8,12 @@ import { Graph } from "../graph";
  *
  * Order must be one of "pre" or "post".
  */
-export enum Order { pre = "pre", post = "post"}
+export enum Order {
+  pre = 'pre',
+  post = 'post',
+}
 
-function dfs(g: Graph, vs: string[]|string, order: Order) {
+function dfs(g: Graph, vs: string[] | string, order: Order) {
   if (!Array.isArray(vs)) {
     vs = [vs];
   }
@@ -21,25 +24,35 @@ function dfs(g: Graph, vs: string[]|string, order: Order) {
   const visited = {};
   vs.forEach((v) => {
     if (!g.hasNode(v)) {
-      throw new Error("Graph does not have node: " + v);
+      throw new Error('Graph does not have node: ' + v);
     }
 
-    doDfs(g, v, (order === "post"), visited, navigation, acc);
+    doDfs(g, v, order === 'post', visited, navigation, acc);
   });
   return acc;
 }
 
-function doDfs(g: Graph, v: string, postOrder: boolean,
-               visited: {[v: string]: boolean}, navigation: (v: string) => string[], acc: string[]) {
+function doDfs(
+  g: Graph,
+  v: string,
+  postOrder: boolean,
+  visited: { [v: string]: boolean },
+  navigation: (v: string) => string[],
+  acc: string[],
+) {
   if (!Reflect.has(visited, v)) {
     visited[v] = true;
 
-    if (!postOrder) { acc.push(v); }
+    if (!postOrder) {
+      acc.push(v);
+    }
     navigation(v).forEach((w) => {
       doDfs(g, w, postOrder, visited, navigation, acc);
     });
-    if (postOrder) {acc.push(v); }
+    if (postOrder) {
+      acc.push(v);
+    }
   }
 }
 
-export {dfs};
+export { dfs };

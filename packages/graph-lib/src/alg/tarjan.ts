@@ -1,10 +1,10 @@
-import { Graph } from "../graph";
+import { Graph } from '../graph';
 
 export interface IVisited {
   [v: string]: {
-    index: number,
-    lowLink: number,
-    onStack: boolean,
+    index: number;
+    lowLink: number;
+    onStack: boolean;
   };
 }
 
@@ -16,11 +16,11 @@ function tarjan(g: Graph): string[][] {
   const results: string[][] = [];
 
   function dfs(v: string) {
-    const entry = visited[v] = {
+    const entry = (visited[v] = {
       lowLink: index,
       index: index++,
       onStack: true,
-    };
+    });
     stack.push(v);
 
     const succ = g.successors(v);

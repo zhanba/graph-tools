@@ -1,4 +1,4 @@
-import { Graph } from "../graph";
+import { Graph } from '../graph';
 
 // tslint:disable-next-line:no-empty
 class CycleException {}

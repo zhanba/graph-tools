@@ -50,7 +50,7 @@ class PriorityQueue {
    *
    * @param {Object} key
    */
-  public priority(key: any): number|undefined {
+  public priority(key: any): number | undefined {
     const index = this.keyIndices[key];
     if (index !== undefined) {
       return this.arr[index].priority;
@@ -63,7 +63,7 @@ class PriorityQueue {
    */
   public min() {
     if (this.size() === 0) {
-      throw new Error("Queue underflow");
+      throw new Error('Queue underflow');
     }
     return this.arr[0].key;
   }
@@ -81,7 +81,7 @@ class PriorityQueue {
     if (!Reflect.has(this.keyIndices, key)) {
       const index = this.size();
       this.keyIndices[key] = index;
-      this.arr.push({key, priority});
+      this.arr.push({ key, priority });
       this._decrease(index);
       return true;
     }
@@ -91,9 +91,9 @@ class PriorityQueue {
   /**
    * Removes and returns the smallest key in the queue. Takes `O(log n)` time.
    */
-  public removeMin(): string|undefined {
+  public removeMin(): string | undefined {
     if (this.size() === 0) {
-      throw new Error("Queue underflow");
+      throw new Error('Queue underflow');
     }
     this._swap(0, this.size() - 1);
     const min = this.arr.pop();
@@ -114,8 +114,15 @@ class PriorityQueue {
   public decrease(key: string, priority: number): void {
     const index = this.keyIndices[key];
     if (priority > this.arr[index].priority) {
-      throw new Error("New priority is greater than current priority. " +
-        "Key: " + key + " Old: " + this.arr[index].priority + " New: " + priority);
+      throw new Error(
+        'New priority is greater than current priority. ' +
+          'Key: ' +
+          key +
+          ' Old: ' +
+          this.arr[index].priority +
+          ' New: ' +
+          priority,
+      );
     }
     this.arr[index].priority = priority;
     this._decrease(index);
@@ -165,4 +172,4 @@ class PriorityQueue {
   }
 }
 
-export {PriorityQueue};
+export { PriorityQueue };

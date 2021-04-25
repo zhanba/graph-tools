@@ -1,5 +1,5 @@
-import { Graph } from "../graph";
-import { CycleException, topsort } from "./topsort";
+import { Graph } from '../graph';
+import { CycleException, topsort } from './topsort';
 
 function isAcyclic(g: Graph) {
   try {
@@ -13,4 +13,4 @@ function isAcyclic(g: Graph) {
   return true;
 }
 
-export {isAcyclic};
+export { isAcyclic };

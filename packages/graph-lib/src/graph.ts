@@ -1,10 +1,10 @@
-import { isEmpty, isFunction, union } from "lodash";
+import { isEmpty, isFunction, union } from 'lodash';
 
-const DEFAULT_EDGE_NAME = "\x00";
-const GRAPH_NODE = "\x00";
-const EDGE_KEY_DELIM = "\x01";
+const DEFAULT_EDGE_NAME = '\x00';
+const GRAPH_NODE = '\x00';
+const EDGE_KEY_DELIM = '\x01';
 
-export type LabelValue =  string | number | boolean | object | undefined;
+export type LabelValue = string | number | boolean | object | undefined;
 
 export type KeyValue = string | number;
 
@@ -53,7 +53,7 @@ export interface IParentObjs {
 
 export interface IChildrenObjs {
   [v: string]: {
-    [e: string]: boolean,
+    [e: string]: boolean;
   };
 }
 
@@ -104,9 +104,9 @@ class Graph {
   private edgeCountNumber = 0;
 
   constructor(opt?: IGraphOptions) {
-    this.directed = (opt && opt.directed !== undefined) ? opt.directed : true;
-    this.multigraph = (opt && opt.multigraph !== undefined) ? opt.multigraph : false;
-    this.compound = (opt && opt.compound !== undefined) ? opt.compound : false;
+    this.directed = opt && opt.directed !== undefined ? opt.directed : true;
+    this.multigraph = opt && opt.multigraph !== undefined ? opt.multigraph : false;
+    this.compound = opt && opt.compound !== undefined ? opt.compound : false;
     if (this.compound) {
       this.childrenObj[GRAPH_NODE] = {};
     }
@@ -124,7 +124,7 @@ class Graph {
 
   /* === Node functions ========== */
   public setDefaultNodeLabel(newDefault: LabelValue | IDefaultLabelFn): Graph {
-    if (typeof newDefault !== "function") {
+    if (typeof newDefault !== 'function') {
       this.defaultNodeLabelFn = () => newDefault;
       return this;
     }
@@ -193,7 +193,9 @@ class Graph {
 
   public removeNode(v: KeyValue): Graph {
     if (this.hasNode(v)) {
-      const removeEdge = (e: string) => {this.removeEdge(this.edgeObjs[e]); };
+      const removeEdge = (e: string) => {
+        this.removeEdge(this.edgeObjs[e]);
+      };
       delete this.nodesObj[v];
       if (this.compound) {
         this.removeFromParentsChildList(v);
@@ -218,15 +220,19 @@ class Graph {
 
   public setParent(v: KeyValue, parent?: KeyValue): Graph {
     if (!this.compound) {
-      throw new Error("Cannot set parent in a non-compound graph");
+      throw new Error('Cannot set parent in a non-compound graph');
     }
 
     if (parent === undefined) {
       parent = GRAPH_NODE;
     } else {
       // Coerce parent to string
-      parent += "";
-      for (let ancestor: KeyValue|undefined = parent; ancestor !== undefined; ancestor = this.parent(ancestor)) {
+      parent += '';
+      for (
+        let ancestor: KeyValue | undefined = parent;
+        ancestor !== undefined;
+        ancestor = this.parent(ancestor)
+      ) {
         if (ancestor === v) {
           throw new Error(`Setting ${parent} as parent of ${v} would create a cycle`);
         }
@@ -246,7 +252,7 @@ class Graph {
     delete this.childrenObj[this.parentObj[v]][v];
   }
 
-  public parent(v: KeyValue): KeyValue|undefined {
+  public parent(v: KeyValue): KeyValue | undefined {
     if (this.compound) {
       const parent = this.parentObj[v];
       if (parent !== GRAPH_NODE) {
@@ -255,7 +261,7 @@ class Graph {
     }
   }
 
-  public children(v: KeyValue = GRAPH_NODE): string[]|undefined {
+  public children(v: KeyValue = GRAPH_NODE): string[] | undefined {
     if (this.compound) {
       const children = this.childrenObj[v];
       if (children) {
@@ -269,7 +275,7 @@ class Graph {
     return undefined;
   }
 
-  public predecessors(v: KeyValue): string[]|undefined {
+  public predecessors(v: KeyValue): string[] | undefined {
     const predsV = this.preds[v];
     if (predsV) {
       return Object.keys(predsV);
@@ -277,7 +283,7 @@ class Graph {
     return undefined;
   }
 
-  public successors(v: KeyValue): string[]|undefined {
+  public successors(v: KeyValue): string[] | undefined {
     const sucsV = this.sucs[v];
     if (sucsV) {
       return Object.keys(sucsV);
@@ -285,7 +291,7 @@ class Graph {
     return undefined;
   }
 
-  public neighbors(v: KeyValue): string[]|undefined {
+  public neighbors(v: KeyValue): string[] | undefined {
     const preds = this.predecessors(v);
     const sucs = this.successors(v);
     if (preds) {
@@ -331,8 +337,8 @@ class Graph {
     }
 
     const self = this;
-    const parents: { [v: string]: KeyValue|undefined } = {};
-    function findParent(v: KeyValue): KeyValue|undefined {
+    const parents: { [v: string]: KeyValue | undefined } = {};
+    function findParent(v: KeyValue): KeyValue | undefined {
       const parent = self.parent(v);
       if (parent === undefined || copy.hasNode(parent)) {
         parents[v] = parent;
@@ -352,7 +358,7 @@ class Graph {
 
   /* === Edge functions ========== */
   public setDefaultEdgeLabel(newDefault: LabelValue | IDefaultLabelFn) {
-    if (typeof newDefault !== "function") {
+    if (typeof newDefault !== 'function') {
       this.defaultEdgeLabelFn = () => newDefault;
     } else {
       this.defaultEdgeLabelFn = newDefault;
@@ -382,9 +388,9 @@ class Graph {
   }
 
   /*
-  * setEdge(v, w, [value, [name]])
-  * setEdge({ v, w, [name] }, [value])
-  */
+   * setEdge(v, w, [value, [name]])
+   * setEdge({ v, w, [name] }, [value])
+   */
   public setEdge(edgeobj: IEdgeObj, value?: LabelValue): Graph;
   public setEdge(v: KeyValue, w: KeyValue, value?: LabelValue, name?: NameValue): Graph;
   public setEdge(x: any): any {
@@ -395,7 +401,7 @@ class Graph {
     let valueSpecified = false;
     const arg0 = arguments[0];
 
-    if (typeof arg0 === "object" && arg0 !== null && "v" in arg0) {
+    if (typeof arg0 === 'object' && arg0 !== null && 'v' in arg0) {
       v = arg0.v;
       w = arg0.w;
       name = arg0.name;
@@ -413,10 +419,10 @@ class Graph {
       }
     }
 
-    v = "" + v;
-    w = "" + w;
+    v = '' + v;
+    w = '' + w;
     if (name !== undefined) {
-      name = "" + name;
+      name = '' + name;
     }
 
     const e = edgeArgsToId(this.directed, v, w, name);
@@ -428,7 +434,7 @@ class Graph {
     }
 
     if (name !== undefined && !this.multigraph) {
-      throw new Error("Cannot set a named edge when isMultigraph = false");
+      throw new Error('Cannot set a named edge when isMultigraph = false');
     }
 
     // It didn't exist, so we need to create it.
@@ -439,7 +445,7 @@ class Graph {
     this.edgeLabels[e] = valueSpecified ? value : this.defaultEdgeLabelFn(v, w, name);
 
     const edgeObj = edgeArgsToObj(this.directed, v, w, name);
-      // Ensure we add undirected edges in a consistent way.
+    // Ensure we add undirected edges in a consistent way.
     v = edgeObj.v;
     w = edgeObj.w;
 
@@ -458,27 +464,30 @@ class Graph {
   public edge(v: KeyValue, w: KeyValue, name?: NameValue): LabelValue;
   public edge(edgeObj: IEdgeObj): LabelValue;
   public edge(v: any): any {
-    const e = arguments.length === 1
-      ? edgeObjToId(this.directed, arguments[0])
-      : edgeArgsToId(this.directed, v, arguments[1], arguments[2]);
+    const e =
+      arguments.length === 1
+        ? edgeObjToId(this.directed, arguments[0])
+        : edgeArgsToId(this.directed, v, arguments[1], arguments[2]);
     return this.edgeLabels[e];
   }
 
   public hasEdge(v: KeyValue, w: KeyValue, name?: NameValue): boolean;
   public hasEdge(edgeObj: IEdgeObj): boolean;
   public hasEdge(v: any): any {
-    const e = arguments.length === 1
-      ? edgeObjToId(this.directed, arguments[0])
-      : edgeArgsToId(this.directed, v, arguments[1], arguments[2]);
+    const e =
+      arguments.length === 1
+        ? edgeObjToId(this.directed, arguments[0])
+        : edgeArgsToId(this.directed, v, arguments[1], arguments[2]);
     return Reflect.has(this.edgeLabels, e);
   }
 
   public removeEdge(v: string, w: string, name?: string): Graph;
   public removeEdge(edgeObj: IEdgeObj): Graph;
   public removeEdge(v: any): any {
-    const e = arguments.length === 1
-      ? edgeObjToId(this.directed, arguments[0])
-      : edgeArgsToId(this.directed, v, arguments[1], arguments[2]);
+    const e =
+      arguments.length === 1
+        ? edgeObjToId(this.directed, arguments[0])
+        : edgeArgsToId(this.directed, v, arguments[1], arguments[2]);
     const edge = this.edgeObjs[e];
     if (edge) {
       const v1 = edge.v;
@@ -494,7 +503,7 @@ class Graph {
     return this;
   }
 
-  public inEdges(v: string, u?: string): IEdgeObj[]|undefined {
+  public inEdges(v: string, u?: string): IEdgeObj[] | undefined {
     const inV = this.in[v];
     if (inV) {
       const edges = Object.values(inV);
@@ -506,7 +515,7 @@ class Graph {
     return undefined;
   }
 
-  public outEdges(v: string, w?: string): IEdgeObj[]|undefined {
+  public outEdges(v: string, w?: string): IEdgeObj[] | undefined {
     const outV = this.out[v];
     if (outV) {
       const edges = Object.values(outV);
@@ -518,7 +527,7 @@ class Graph {
     return undefined;
   }
 
-  public nodeEdges(v: string, w?: string): IEdgeObj[]|undefined {
+  public nodeEdges(v: string, w?: string): IEdgeObj[] | undefined {
     const inEdges = this.inEdges(v, w);
     const outEdges = this.outEdges(v, w);
     if (inEdges && outEdges) {
@@ -542,12 +551,14 @@ function incrementOrInitEntry(map: ICount, k: string): void {
 }
 
 function decrementOrRemoveEntry(map: ICount, k: string): void {
-  if (!--map[k]) { delete map[k]; }
+  if (!--map[k]) {
+    delete map[k];
+  }
 }
 
 function edgeArgsToId(isDirected: boolean, v0: string, w0: string, name?: string): string {
-  let v = "" + v0;
-  let w = "" + w0;
+  let v = '' + v0;
+  let w = '' + w0;
   if (!isDirected && v > w) {
     const tmp = v;
     v = w;
@@ -557,8 +568,8 @@ function edgeArgsToId(isDirected: boolean, v0: string, w0: string, name?: string
 }
 
 function edgeArgsToObj(isDirected: boolean, v0: string, w0: string, name?: string): IEdgeObj {
-  let v = "" + v0;
-  let w = "" + w0;
+  let v = '' + v0;
+  let w = '' + w0;
   if (!isDirected && v > w) {
     const tmp = v;
     v = w;
@@ -575,6 +586,4 @@ function edgeObjToId(isDirected: boolean, edgeObj: IEdgeObj): string {
   return edgeArgsToId(isDirected, edgeObj.v, edgeObj.w, edgeObj.name);
 }
 
-export {
-  Graph,
-};
+export { Graph };

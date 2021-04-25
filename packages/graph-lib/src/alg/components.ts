@@ -1,11 +1,13 @@
-import { Graph } from "../graph";
+import { Graph } from '../graph';
 
 function components(g: Graph) {
-  const visited: {[v: string]: boolean} = {};
+  const visited: { [v: string]: boolean } = {};
   let cmpt: string[] = [];
   const cmpts: string[][] = [];
   function dfs(v: string) {
-    if (Reflect.has(visited, v)) { return; }
+    if (Reflect.has(visited, v)) {
+      return;
+    }
     visited[v] = true;
     cmpt.push(v);
     const succ = g.successors(v);
@@ -29,4 +31,4 @@ function components(g: Graph) {
   return cmpts;
 }
 
-export {components};
+export { components };

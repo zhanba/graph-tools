@@ -1,5 +1,5 @@
-import { Graph } from "../graph";
-import { tarjan } from "./tarjan";
+import { Graph } from '../graph';
+import { tarjan } from './tarjan';
 
 function findCycles(g: Graph) {
   return tarjan(g).filter((cmpt) => {
