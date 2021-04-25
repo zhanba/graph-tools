@@ -1,4 +1,4 @@
-import { Graph, IEdgeObj } from '../graph';
+import type { Graph, IEdgeObj } from '../graph';
 import { PriorityQueue } from '../priority-queue';
 
 export interface IEntry {
@@ -6,13 +6,9 @@ export interface IEntry {
   distance: number;
 }
 
-export interface IDijkstraResult {
-  [v: string]: IEntry;
-}
+export type IDijkstraResult = Record<string, IEntry>;
 
-export interface IDijkstraAllResult {
-  [v: string]: IDijkstraResult;
-}
+export type IDijkstraAllResult = Record<string, IDijkstraResult>;
 
 export type IWeightFn = (edge: IEdgeObj) => number;
 
@@ -43,11 +39,11 @@ function runDijkstra(g: Graph, source: string, weightFn: IWeightFn, edgeFn: IEdg
 
     if (weight < 0) {
       throw new Error(
-        'dijkstra does not allow negative edge weights. ' +
-          'Bad edge: ' +
-          edge +
-          ' Weight: ' +
-          weight,
+        `${'dijkstra does not allow negative edge weights. ' +
+          'Bad edge: '}${ 
+          edge 
+          } Weight: ${ 
+          weight}`,
       );
     }
 

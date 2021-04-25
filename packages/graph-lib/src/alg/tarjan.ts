@@ -1,12 +1,10 @@
-import { Graph } from '../graph';
+import type { Graph } from '../graph';
 
-export interface IVisited {
-  [v: string]: {
+export type IVisited = Record<string, {
     index: number;
     lowLink: number;
     onStack: boolean;
-  };
-}
+  }>;
 
 function tarjan(g: Graph): string[][] {
   let index = 0;
@@ -16,8 +14,10 @@ function tarjan(g: Graph): string[][] {
   const results: string[][] = [];
 
   function dfs(v: string) {
+    // eslint-disable-next-line no-multi-assign
     const entry = (visited[v] = {
       lowLink: index,
+      // eslint-disable-next-line no-plusplus
       index: index++,
       onStack: true,
     });

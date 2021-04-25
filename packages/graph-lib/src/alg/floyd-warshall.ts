@@ -1,14 +1,10 @@
-import { Graph } from '../graph';
-import { IEdgeFn, IWeightFn } from './dijkstra';
+import type { Graph } from '../graph';
+import type { IEdgeFn, IWeightFn } from './dijkstra';
 
-interface IResult {
-  [v: string]: {
-    [v: string]: {
+type IResult = Record<string, Record<string, {
       distance: number;
       predecessor?: string;
-    };
-  };
-}
+    }>>;
 
 const DEFAULT_WEIGHT_FUNC: IWeightFn = () => 1;
 

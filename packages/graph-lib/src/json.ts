@@ -1,4 +1,5 @@
-import { Graph, KeyValue, LabelValue } from './graph';
+import type { KeyValue, LabelValue } from './graph';
+import { Graph } from './graph';
 
 export interface INodeObj {
   v: KeyValue;
@@ -33,6 +34,7 @@ function write(g: Graph): IJsonObj {
       directed: g.directed,
       multigraph: g.multigraph,
     },
+    // eslint-disable-next-line prefer-object-spread
     value: typeof g.graph === 'object' ? Object.assign({}, g.graph()) : g.graph(),
   };
 

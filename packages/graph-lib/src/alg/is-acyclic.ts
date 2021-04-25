@@ -1,4 +1,4 @@
-import { Graph } from '../graph';
+import type { Graph } from '../graph';
 import { CycleException, topsort } from './topsort';
 
 function isAcyclic(g: Graph) {

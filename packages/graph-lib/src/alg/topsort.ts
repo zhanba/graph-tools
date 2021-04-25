@@ -1,11 +1,11 @@
-import { Graph } from '../graph';
+/* eslint-disable @typescript-eslint/no-throw-literal */
+import type { Graph } from '../graph';
 
-// tslint:disable-next-line:no-empty
 class CycleException {}
 
 function topsort(g: Graph) {
-  const visited: { [node: string]: boolean } = {};
-  const stack: { [node: string]: boolean } = {};
+  const visited: Record<string, boolean> = {};
+  const stack: Record<string, boolean> = {};
   const results: string[] = [];
 
   function visit(node: string) {

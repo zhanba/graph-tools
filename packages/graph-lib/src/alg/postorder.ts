@@ -1,4 +1,4 @@
-import { Graph } from '../graph';
+import type { Graph } from '../graph';
 import { dfs, Order } from './dfs';
 
 function postorder(g: Graph, vs: string | string[]) {

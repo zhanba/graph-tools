@@ -1,4 +1,4 @@
-import { Graph } from '../graph';
+import type { Graph } from '../graph';
 
 /*
  * A helper that preforms a pre- or post-order traversal on the input graph
@@ -15,6 +15,7 @@ export enum Order {
 
 function dfs(g: Graph, vs: string[] | string, order: Order) {
   if (!Array.isArray(vs)) {
+    // eslint-disable-next-line no-param-reassign
     vs = [vs];
   }
 
@@ -22,9 +23,9 @@ function dfs(g: Graph, vs: string[] | string, order: Order) {
 
   const acc: string[] = [];
   const visited = {};
-  vs.forEach((v) => {
+  vs.forEach(v => {
     if (!g.hasNode(v)) {
-      throw new Error('Graph does not have node: ' + v);
+      throw new Error(`Graph does not have node: ${  v}`);
     }
 
     doDfs(g, v, order === 'post', visited, navigation, acc);
@@ -36,17 +37,18 @@ function doDfs(
   g: Graph,
   v: string,
   postOrder: boolean,
-  visited: { [v: string]: boolean },
-  navigation: (v: string) => string[],
+  visited: Record<string, boolean>,
+  navigation: (v: string) => string[] | undefined,
   acc: string[],
 ) {
   if (!Reflect.has(visited, v)) {
+    // eslint-disable-next-line no-param-reassign
     visited[v] = true;
 
     if (!postOrder) {
       acc.push(v);
     }
-    navigation(v).forEach((w) => {
+    navigation(v)?.forEach(w => {
       doDfs(g, w, postOrder, visited, navigation, acc);
     });
     if (postOrder) {

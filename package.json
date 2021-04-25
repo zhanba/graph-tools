@@ -9,7 +9,8 @@
     "build:doc": "father doc build",
     "deploy": "father doc deploy",
     "test": "father test",
-    "coverage": "father test --coverage"
+    "coverage": "father test --coverage",
+    "lint": "father lint"
   },
   "devDependencies": {
     "@umijs/fabric": "^2.5.7",

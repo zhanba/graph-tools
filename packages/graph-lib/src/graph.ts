@@ -1,10 +1,14 @@
-import { isEmpty, isFunction, union } from 'lodash';
+/* eslint-disable prefer-destructuring */
+/* eslint-disable prefer-rest-params */
+/* eslint-disable no-param-reassign */
+/* eslint-disable no-plusplus */
+import { isEmpty, union } from 'lodash';
 
 const DEFAULT_EDGE_NAME = '\x00';
 const GRAPH_NODE = '\x00';
 const EDGE_KEY_DELIM = '\x01';
 
-export type LabelValue = string | number | boolean | object | undefined;
+export type LabelValue = string | number | boolean | Record<string, unknown> | undefined;
 
 export type KeyValue = string | number;
 
@@ -16,21 +20,13 @@ export interface IGraphOptions {
   compound?: boolean;
 }
 
-export interface INodes {
-  [nodename: string]: LabelValue;
-}
+export type INodes = Record<string, LabelValue>;
 
-export interface ICount {
-  [key: string]: number;
-}
+export type ICount = Record<string, number>;
 
-export interface INodeCount {
-  [key: string]: ICount;
-}
+export type INodeCount = Record<string, ICount>;
 
-export interface IEdgeLabels {
-  [e: string]: LabelValue;
-}
+export type IEdgeLabels = Record<string, LabelValue>;
 
 export interface IEdgeObj {
   [key: string]: string | undefined;
@@ -39,23 +35,13 @@ export interface IEdgeObj {
   name?: string;
 }
 
-export interface IEdgeObjs {
-  [e: string]: IEdgeObj;
-}
+export type IEdgeObjs = Record<string, IEdgeObj>;
 
-export interface IEdgeObjsObj {
-  [v: string]: IEdgeObjs;
-}
+export type IEdgeObjsObj = Record<string, IEdgeObjs>;
 
-export interface IParentObjs {
-  [v: string]: KeyValue;
-}
+export type IParentObjs = Record<string, KeyValue>;
 
-export interface IChildrenObjs {
-  [v: string]: {
-    [e: string]: boolean;
-  };
-}
+export type IChildrenObjs = Record<string, Record<string, boolean>>;
 
 export type IDefaultLabelFn = (v: any) => LabelValue;
 
@@ -141,17 +127,16 @@ class Graph {
   }
 
   public sources(): string[] {
-    return this.nodes().filter((v) => isEmpty(this.in[v]));
+    return this.nodes().filter(v => isEmpty(this.in[v]));
   }
 
   public sinks(): string[] {
-    return this.nodes().filter((v) => isEmpty(this.out[v]));
+    return this.nodes().filter(v => isEmpty(this.out[v]));
   }
 
   public setNodes(vs: string[], value?: LabelValue): Graph {
-    const args = arguments;
-    vs.forEach((v) => {
-      if (args.length > 1) {
+    vs.forEach(v => {
+      if (value) {
         this.setNode(v, value);
       } else {
         this.setNode(v);
@@ -202,7 +187,7 @@ class Graph {
         delete this.parentObj[v];
         const children = this.children(v);
         if (children !== undefined) {
-          children.forEach((child) => this.setParent(child));
+          children.forEach(child => this.setParent(child));
         }
         delete this.childrenObj[v];
       }
@@ -324,34 +309,35 @@ class Graph {
 
     copy.setGraph(this.graph());
 
-    for (const [v, value] of Object.entries(this.nodesObj)) {
+    Object.entries(this.nodesObj).forEach(([v, value]) => {
       if (filter(v)) {
         copy.setNode(v, value);
       }
-    }
+    });
 
-    for (const [v, edgeObject] of Object.entries(this.edgeObjs)) {
+    Object.entries(this.edgeObjs).forEach(([, edgeObject]) => {
       if (copy.hasNode(edgeObject.v) && copy.hasNode(edgeObject.w)) {
         copy.setEdge(edgeObject, this.edge(edgeObject));
       }
-    }
+    });
 
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
-    const parents: { [v: string]: KeyValue | undefined } = {};
+    const parents: Record<string, KeyValue | undefined> = {};
     function findParent(v: KeyValue): KeyValue | undefined {
       const parent = self.parent(v);
       if (parent === undefined || copy.hasNode(parent)) {
         parents[v] = parent;
         return parent;
-      } else if (parent in parents) {
-        return parents[parent];
-      } else {
-        return findParent(parent);
       }
+      if (parent in parents) {
+        return parents[parent];
+      }
+      return findParent(parent);
     }
 
     if (this.compound) {
-      copy.nodes().forEach((v) => copy.setParent(v, findParent(v)));
+      copy.nodes().forEach(v => copy.setParent(v, findParent(v)));
     }
     return copy;
   }
@@ -375,9 +361,8 @@ class Graph {
   }
 
   public setPath(vs: string[], value?: LabelValue): Graph {
-    const args = arguments;
     vs.reduce((v, w) => {
-      if (args.length > 1) {
+      if (value) {
         this.setEdge(v, w, value);
       } else {
         this.setEdge(v, w);
@@ -393,7 +378,7 @@ class Graph {
    */
   public setEdge(edgeobj: IEdgeObj, value?: LabelValue): Graph;
   public setEdge(v: KeyValue, w: KeyValue, value?: LabelValue, name?: NameValue): Graph;
-  public setEdge(x: any): any {
+  public setEdge(): any {
     let v;
     let w;
     let name;
@@ -419,10 +404,10 @@ class Graph {
       }
     }
 
-    v = '' + v;
-    w = '' + w;
+    v = `${v}`;
+    w = `${w}`;
     if (name !== undefined) {
-      name = '' + name;
+      name = `${name}`;
     }
 
     const e = edgeArgsToId(this.directed, v, w, name);
@@ -510,7 +495,7 @@ class Graph {
       if (!u) {
         return edges;
       }
-      return edges.filter((edge) => edge.v === u);
+      return edges.filter(edge => edge.v === u);
     }
     return undefined;
   }
@@ -522,7 +507,7 @@ class Graph {
       if (!w) {
         return edges;
       }
-      return edges.filter((edge) => edge.w === w);
+      return edges.filter(edge => edge.w === w);
     }
     return undefined;
   }
@@ -537,8 +522,10 @@ class Graph {
   }
 
   // Defaults to be set when creating a new node
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private defaultNodeLabelFn: IDefaultLabelFn = (label: LabelValue) => undefined;
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private defaultEdgeLabelFn: DefaultEdgeLabelFn = (label: LabelValue) => undefined;
 }
 
@@ -557,8 +544,8 @@ function decrementOrRemoveEntry(map: ICount, k: string): void {
 }
 
 function edgeArgsToId(isDirected: boolean, v0: string, w0: string, name?: string): string {
-  let v = '' + v0;
-  let w = '' + w0;
+  let v = `${v0}`;
+  let w = `${w0}`;
   if (!isDirected && v > w) {
     const tmp = v;
     v = w;
@@ -568,8 +555,8 @@ function edgeArgsToId(isDirected: boolean, v0: string, w0: string, name?: string
 }
 
 function edgeArgsToObj(isDirected: boolean, v0: string, w0: string, name?: string): IEdgeObj {
-  let v = '' + v0;
-  let w = '' + w0;
+  let v = `${v0}`;
+  let w = `${w0}`;
   if (!isDirected && v > w) {
     const tmp = v;
     v = w;

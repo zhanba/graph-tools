@@ -1,7 +1,7 @@
-import { Graph } from '../graph';
+import type { Graph } from '../graph';
 
 function components(g: Graph) {
-  const visited: { [v: string]: boolean } = {};
+  const visited: Record<string, boolean> = {};
   let cmpt: string[] = [];
   const cmpts: string[][] = [];
   function dfs(v: string) {

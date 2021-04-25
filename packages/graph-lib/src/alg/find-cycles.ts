@@ -1,4 +1,4 @@
-import { Graph } from '../graph';
+import type { Graph } from '../graph';
 import { tarjan } from './tarjan';
 
 function findCycles(g: Graph) {

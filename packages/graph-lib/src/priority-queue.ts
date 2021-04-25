@@ -1,6 +1,6 @@
-export interface IKeyIndices {
-  [key: string]: number;
-}
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable no-param-reassign */
+export type IKeyIndices = Record<string, number>;
 
 export interface IQueueItem {
   key: string;
@@ -34,7 +34,7 @@ class PriorityQueue {
    * Returns the keys that are in the queue. Takes `O(n)` time.
    */
   public keys(): string[] {
-    return this.arr.map((x) => x.key);
+    return this.arr.map(x => x.key);
   }
 
   /**
@@ -115,13 +115,9 @@ class PriorityQueue {
     const index = this.keyIndices[key];
     if (priority > this.arr[index].priority) {
       throw new Error(
-        'New priority is greater than current priority. ' +
-          'Key: ' +
-          key +
-          ' Old: ' +
-          this.arr[index].priority +
-          ' New: ' +
-          priority,
+        `${'New priority is greater than current priority. ' + 'Key: '}${key} Old: ${
+          this.arr[index].priority
+        } New: ${priority}`,
       );
     }
     this.arr[index].priority = priority;
@@ -129,7 +125,7 @@ class PriorityQueue {
   }
 
   private _heapify(i: number): void {
-    const arr = this.arr;
+    const { arr } = this;
     const l = 2 * i;
     const r = l + 1;
     let largest = i;
@@ -146,8 +142,8 @@ class PriorityQueue {
   }
 
   private _decrease(index: number): void {
-    const arr = this.arr;
-    const priority = arr[index].priority;
+    const { arr } = this;
+    const { priority } = arr[index];
     let parent;
     while (index !== 0) {
       // parent = index >> 1;
@@ -161,8 +157,8 @@ class PriorityQueue {
   }
 
   private _swap(i: number, j: number): void {
-    const arr = this.arr;
-    const keyIndices = this.keyIndices;
+    const { arr } = this;
+    const { keyIndices } = this;
     const origArrI = arr[i];
     const origArrJ = arr[j];
     arr[i] = origArrJ;
