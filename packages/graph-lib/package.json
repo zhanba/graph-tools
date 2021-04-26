@@ -1,5 +1,5 @@
 {
-  "name": "@graph-tools/graphlib",
+  "name": "@pailye/graphlib",
   "version": "0.1.4",
   "description": "A graph lib based on graphlib and write in typescript",
   "main": "lib/index.js",
