@@ -5,6 +5,7 @@
   ],
   "scripts": {
     "build": "father build",
+    "pub": "lerna publish",
     "dev": "father doc dev",
     "build:doc": "father doc build",
     "deploy": "father doc deploy",
