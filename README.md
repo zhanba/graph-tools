@@ -1,3 +1,5 @@
-# Graph tools
+# Pailye
 
-Include graph-lib, graph-layout, renders
+pailye 是`排列`的耶鲁拼音.
+
+pailye is Yale Romanization for `排列`.
