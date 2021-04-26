@@ -2204,6 +2204,17 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
+"@jest/types@^26.6.2":
+  version "26.6.2"
+  resolved "https://registry.npm.alibaba-inc.com/@jest/types/download/@jest/types-26.6.2.tgz#bef5a532030e1d88a2f5a6d933f84e97226ed48e"
+  integrity sha1-vvWlMgMOHYii9abZM/hOlyJu1I4=
+  dependencies:
+    "@types/istanbul-lib-coverage" "^2.0.0"
+    "@types/istanbul-reports" "^3.0.0"
+    "@types/node" "*"
+    "@types/yargs" "^15.0.0"
+    chalk "^4.0.0"
+
 "@lerna/add@4.0.0":
   version "4.0.0"
   resolved "https://registry.npm.alibaba-inc.com/@lerna/add/download/@lerna/add-4.0.0.tgz#c36f57d132502a57b9e7058d1548b7a565ef183f"
@@ -4195,6 +4206,21 @@
     "@types/istanbul-lib-coverage" "*"
     "@types/istanbul-lib-report" "*"
 
+"@types/istanbul-reports@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.npm.alibaba-inc.com/@types/istanbul-reports/download/@types/istanbul-reports-3.0.0.tgz#508b13aa344fa4976234e75dddcc34925737d821"
+  integrity sha1-UIsTqjRPpJdiNOdd3cw0klc32CE=
+  dependencies:
+    "@types/istanbul-lib-report" "*"
+
+"@types/jest@^26.0.22":
+  version "26.0.22"
+  resolved "https://registry.npm.alibaba-inc.com/@types/jest/download/@types/jest-26.0.22.tgz#8308a1debdf1b807aa47be2838acdcd91e88fbe6"
+  integrity sha1-gwih3r3xuAeqR74oOKzc2R6I++Y=
+  dependencies:
+    jest-diff "^26.0.0"
+    pretty-format "^26.0.0"
+
 "@types/json-schema@^7.0.3", "@types/json-schema@^7.0.5":
   version "7.0.7"
   resolved "https://registry.npm.alibaba-inc.com/@types/json-schema/download/@types/json-schema-7.0.7.tgz#98a993516c859eb0d5c4c8f098317a9ea68db9ad"
@@ -4424,6 +4450,13 @@
   version "13.0.11"
   resolved "https://registry.npm.alibaba-inc.com/@types/yargs/download/@types/yargs-13.0.11.tgz#def2f0c93e4bdf2c61d7e34899b17e34be28d3b1"
   integrity sha1-3vLwyT5L3yxh1+NImbF+NL4o07E=
+  dependencies:
+    "@types/yargs-parser" "*"
+
+"@types/yargs@^15.0.0":
+  version "15.0.13"
+  resolved "https://registry.npm.alibaba-inc.com/@types/yargs/download/@types/yargs-15.0.13.tgz#34f7fec8b389d7f3c1fd08026a5763e072d3c6dc"
+  integrity sha1-NPf+yLOJ1/PB/QgCaldj4HLTxtw=
   dependencies:
     "@types/yargs-parser" "*"
 
@@ -8652,6 +8685,11 @@ diff-sequences@^24.9.0:
   version "24.9.0"
   resolved "https://registry.npm.alibaba-inc.com/diff-sequences/download/diff-sequences-24.9.0.tgz#5715d6244e2aa65f48bba0bc972db0b0b11e95b5"
   integrity sha1-VxXWJE4qpl9Iu6C8ly2wsLEelbU=
+
+diff-sequences@^26.6.2:
+  version "26.6.2"
+  resolved "https://registry.npm.alibaba-inc.com/diff-sequences/download/diff-sequences-26.6.2.tgz#48ba99157de1923412eed41db6b6d4aa9ca7c0b1"
+  integrity sha1-SLqZFX3hkjQS7tQdtrbUqpynwLE=
 
 diffie-hellman@^5.0.0:
   version "5.0.3"
@@ -13249,6 +13287,16 @@ jest-diff@^24.9.0:
     jest-get-type "^24.9.0"
     pretty-format "^24.9.0"
 
+jest-diff@^26.0.0:
+  version "26.6.2"
+  resolved "https://registry.npm.alibaba-inc.com/jest-diff/download/jest-diff-26.6.2.tgz#1aa7468b52c3a68d7d5c5fdcdfcd5e49bd164394"
+  integrity sha1-GqdGi1LDpo19XF/c381eSb0WQ5Q=
+  dependencies:
+    chalk "^4.0.0"
+    diff-sequences "^26.6.2"
+    jest-get-type "^26.3.0"
+    pretty-format "^26.6.2"
+
 jest-docblock@^24.3.0:
   version "24.9.0"
   resolved "https://registry.npm.alibaba-inc.com/jest-docblock/download/jest-docblock-24.9.0.tgz#7970201802ba560e1c4092cc25cbedf5af5a8ce2"
@@ -13294,6 +13342,11 @@ jest-get-type@^24.9.0:
   version "24.9.0"
   resolved "https://registry.npm.alibaba-inc.com/jest-get-type/download/jest-get-type-24.9.0.tgz#1684a0c8a50f2e4901b6644ae861f579eed2ef0e"
   integrity sha1-FoSgyKUPLkkBtmRK6GH1ee7S7w4=
+
+jest-get-type@^26.3.0:
+  version "26.3.0"
+  resolved "https://registry.npm.alibaba-inc.com/jest-get-type/download/jest-get-type-26.3.0.tgz#e97dc3c3f53c2b406ca7afaed4493b1d099199e0"
+  integrity sha1-6X3Dw/U8K0Bsp6+u1Ek7HQmRmeA=
 
 jest-haste-map@^24.9.0:
   version "24.9.0"
@@ -17618,6 +17671,16 @@ pretty-format@^24.9.0:
     ansi-styles "^3.2.0"
     react-is "^16.8.4"
 
+pretty-format@^26.0.0, pretty-format@^26.6.2:
+  version "26.6.2"
+  resolved "https://registry.npm.alibaba-inc.com/pretty-format/download/pretty-format-26.6.2.tgz#e35c2705f14cb7fe2fe94fa078345b444120fc93"
+  integrity sha1-41wnBfFMt/4v6U+geDRbREEg/JM=
+  dependencies:
+    "@jest/types" "^26.6.2"
+    ansi-regex "^5.0.0"
+    ansi-styles "^4.0.0"
+    react-is "^17.0.1"
+
 pretty-hrtime@^1.0.3:
   version "1.0.3"
   resolved "https://registry.npm.alibaba-inc.com/pretty-hrtime/download/pretty-hrtime-1.0.3.tgz#b7e3ea42435a4c9b2759d99e0f201eb195802ee1"
@@ -18725,6 +18788,11 @@ react-is@^16.12.0, react-is@^16.13.1, react-is@^16.6.0, react-is@^16.7.0, react-
   version "16.13.1"
   resolved "https://registry.npm.alibaba-inc.com/react-is/download/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
   integrity sha1-eJcppNw23imZ3BVt1sHZwYzqVqQ=
+
+react-is@^17.0.1:
+  version "17.0.2"
+  resolved "https://registry.npm.alibaba-inc.com/react-is/download/react-is-17.0.2.tgz#e691d4a8e9c789365655539ab372762b0efb54f0"
+  integrity sha1-5pHUqOnHiTZWVVOas3J2Kw77VPA=
 
 react-lazy-load@^3.0.13:
   version "3.1.13"

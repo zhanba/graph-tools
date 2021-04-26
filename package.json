@@ -10,11 +10,14 @@
     "deploy": "father doc deploy",
     "test": "father test",
     "coverage": "father test --coverage",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
+    "@types/jest": "^26.0.22",
     "@umijs/fabric": "^2.5.7",
     "father": "^2.30.4",
-    "lerna": "^4.0.0"
+    "lerna": "^4.0.0",
+    "typescript": "^4.2.4"
   }
 }
