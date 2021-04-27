@@ -1,6 +1,14 @@
 import type { Graph } from '../graph';
 
-function components(g: Graph) {
+/**
+ * Finds all connected components in a graph and returns an array of these components.
+ * Each component is itself an array that contains the ids of nodes in the component.
+ * Complexity: O(|V|).
+ *
+ * @param graph graph to find components in.
+ * @returns array of nodes list representing components
+ */
+export function components(graph: Graph) {
   const visited: Record<string, boolean> = {};
   let cmpt: string[] = [];
   const cmpts: string[][] = [];
@@ -10,17 +18,17 @@ function components(g: Graph) {
     }
     visited[v] = true;
     cmpt.push(v);
-    const succ = g.successors(v);
+    const succ = graph.successors(v);
     if (succ !== undefined) {
       succ.forEach(dfs);
     }
-    const pred = g.predecessors(v);
+    const pred = graph.predecessors(v);
     if (pred !== undefined) {
       pred.forEach(dfs);
     }
   }
 
-  g.nodes().forEach((v) => {
+  graph.nodes().forEach((v) => {
     cmpt = [];
     dfs(v);
     if (cmpt.length) {
@@ -30,5 +38,3 @@ function components(g: Graph) {
 
   return cmpts;
 }
-
-export { components };

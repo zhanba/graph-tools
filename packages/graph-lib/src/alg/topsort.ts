@@ -1,9 +1,17 @@
 /* eslint-disable @typescript-eslint/no-throw-literal */
 import type { Graph } from '../graph';
 
-class CycleException {}
+export class CycleException {}
 
-function topsort(g: Graph) {
+/**
+ * Given a Graph graph this function applies topological sorting to it.
+ * If the graph has a cycle it is impossible to generate such a list and CycleException is thrown.
+ * Complexity: O(|V| + |E|).
+ *
+ * @param graph graph to apply topological sorting to.
+ * @returns an array of nodes such that for each edge u -> v, u appears before v in the array.
+ */
+export function topsort(graph: Graph) {
   const visited: Record<string, boolean> = {};
   const stack: Record<string, boolean> = {};
   const results: string[] = [];
@@ -16,7 +24,7 @@ function topsort(g: Graph) {
     if (!Reflect.has(visited, node)) {
       stack[node] = true;
       visited[node] = true;
-      const pred = g.predecessors(node);
+      const pred = graph.predecessors(node);
       if (pred !== undefined) {
         pred.forEach(visit);
       }
@@ -25,13 +33,11 @@ function topsort(g: Graph) {
     }
   }
 
-  g.sinks().forEach(visit);
+  graph.sinks().forEach(visit);
 
-  if (Object.keys(visited).length !== g.nodeCount()) {
+  if (Object.keys(visited).length !== graph.nodeCount()) {
     throw new CycleException();
   }
 
   return results;
 }
-
-export { topsort, CycleException };

@@ -25,17 +25,24 @@ export interface IJsonObj {
   value: LabelValue;
 }
 
-function write(g: Graph): IJsonObj {
+/**
+ * Creates a JSON representation of the graph that can be serialized to a string with
+ * JSON.stringify. The graph can later be restored using json.read.
+ *
+ * @param graph target to create JSON representation of.
+ * @returns JSON serializable graph representation
+ */
+function write(graph: Graph): IJsonObj {
   const jsonObj: IJsonObj = {
-    edges: writeEdges(g),
-    nodes: writeNodes(g),
+    edges: writeEdges(graph),
+    nodes: writeNodes(graph),
     options: {
-      compound: g.compound,
-      directed: g.directed,
-      multigraph: g.multigraph,
+      compound: graph.compound,
+      directed: graph.directed,
+      multigraph: graph.multigraph,
     },
     // eslint-disable-next-line prefer-object-spread
-    value: typeof g.graph === 'object' ? Object.assign({}, g.graph()) : g.graph(),
+    value: typeof graph.graph === 'object' ? Object.assign({}, graph.graph()) : graph.graph(),
   };
 
   return jsonObj;
@@ -75,6 +82,20 @@ function writeEdges(g: Graph): IEdgeObj[] {
   });
 }
 
+/**
+ * Takes JSON as input and returns the graph representation.
+ *
+ * @example
+ * ```
+ * var g2 = graphlib.json.read(JSON.parse(str));
+ * g2.nodes();
+ * // ['a', 'b']
+ * g2.edges()
+ * // [ { v: 'a', w: 'b' } ]
+ * ```
+ * @param jsonObj JSON serializable graph representation
+ * @returns graph constructed acccording to specified representation
+ */
 function read(jsonObj: IJsonObj): Graph {
   const g = new Graph(jsonObj.options).setGraph(jsonObj.value);
   jsonObj.nodes.forEach((entry) => {

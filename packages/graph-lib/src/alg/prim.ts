@@ -3,7 +3,18 @@ import { Graph } from '../graph';
 import { PriorityQueue } from '../priority-queue';
 import type { IWeightFn } from './dijkstra';
 
-function prim(g: Graph, weightFunc: IWeightFn) {
+/**
+ * Prim's algorithm takes a connected undirected graph and generates a minimum spanning tree. This
+ * function returns the minimum spanning tree as an undirected graph. This algorithm is derived
+ * from the description in "Introduction to Algorithms", Third Edition, Cormen, et al., Pg 634.
+ * Complexity: O(|E| * log |V|);
+ *
+ * @param graph graph to generate a minimum spanning tree of.
+ * @param weightFunc function which takes edge e and returns the weight of it. It throws an Error if
+ *           the graph is not connected.
+ * @returns minimum spanning tree of graph.
+ */
+export function prim(graph: Graph, weightFunc: IWeightFn) {
   const result = new Graph();
   const parents: Record<string, string> = {};
   const pq = new PriorityQueue();
@@ -21,17 +32,17 @@ function prim(g: Graph, weightFunc: IWeightFn) {
     }
   }
 
-  if (g.nodeCount() === 0) {
+  if (graph.nodeCount() === 0) {
     return result;
   }
 
-  g.nodes().forEach((v2) => {
+  graph.nodes().forEach((v2) => {
     pq.add(v2, Number.POSITIVE_INFINITY);
     result.setNode(v2);
   });
 
   // Start from an arbitrary node
-  pq.decrease(g.nodes()[0], 0);
+  pq.decrease(graph.nodes()[0], 0);
 
   let init = false;
   while (pq.size() > 0) {
@@ -39,11 +50,11 @@ function prim(g: Graph, weightFunc: IWeightFn) {
     if (Reflect.has(parents, v)) {
       result.setEdge(v, parents[v]);
     } else if (init) {
-      throw new Error(`Input graph is not connected: ${  g}`);
+      throw new Error(`Input graph is not connected: ${graph}`);
     } else {
       init = true;
     }
-    const nodeEdges = g.nodeEdges(v);
+    const nodeEdges = graph.nodeEdges(v);
     if (nodeEdges !== undefined) {
       nodeEdges.forEach(updateNeighbors);
     }
@@ -51,5 +62,3 @@ function prim(g: Graph, weightFunc: IWeightFn) {
 
   return result;
 }
-
-export { prim };
