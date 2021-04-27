@@ -1,6 +1,6 @@
 {
   "name": "@pailye/graphlib",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "A graph lib based on graphlib and write in typescript",
   "main": "lib/index.js",
   "module": "dist/index.esm.js",
