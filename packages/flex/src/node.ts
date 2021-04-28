@@ -41,7 +41,7 @@ export class Node extends ParsedNodeProperties {
     return this;
   }
 
-  calculateLayout(width: number, height: number, direction: FlexDirectionProperty) {
+  calculateLayout(width?: number, height?: number, direction?: FlexDirectionProperty) {
     if (width) this.width = width;
     if (height) this.height = height;
     if (direction) this.flexDirection = direction;
@@ -67,7 +67,7 @@ export class Node extends ParsedNodeProperties {
     return layout;
   }
 
-  getAllComputedLayout(props: NodePropertyKey[]) {
+  getAllComputedLayout(props?: NodePropertyKey[]) {
     const layout = this.getComputedLayout();
     layout.children = this.children
       .sort((a, b) => {
