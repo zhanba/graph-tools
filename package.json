@@ -6,18 +6,22 @@
   "scripts": {
     "build": "father build",
     "pub": "lerna publish",
-    "dev": "father doc dev",
-    "build:doc": "father doc build",
-    "deploy": "father doc deploy",
+    "dev": "dumi dev",
     "test": "father test",
+    "cov": "father test --coverage",
+    "build:doc": "dumi build",
+    "deploy": "gh-pages -d docdist",
     "coverage": "father test --coverage",
     "lint": "eslint . --ext .ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "ci": "father test"
   },
   "devDependencies": {
     "@types/jest": "^26.0.22",
     "@umijs/fabric": "^2.5.7",
+    "dumi": "^1.1.16",
     "father": "^2.30.4",
+    "gh-pages": "^3.1.0",
     "lerna": "^4.0.0",
     "prettier": "^2.2.1",
     "typescript": "^4.2.4"

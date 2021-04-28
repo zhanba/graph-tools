@@ -2,9 +2,9 @@
   "name": "@pailye/graphlib",
   "version": "0.1.5",
   "description": "A graph lib based on graphlib and write in typescript",
-  "main": "lib/index.js",
+  "main": "dist/index.js",
   "module": "dist/index.esm.js",
-  "types": "dist/src/index.d.ts",
+  "types": "dist/index.d.ts",
   "sideEffects": false,
   "scripts": {
     "bench": "ts-node src/bench.ts",
@@ -15,12 +15,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:zhanba/graph-lib.git"
+    "url": "git@github.com:zhanba/pailye.git"
   },
-  "bugs": {
-    "url": "https://github.com/zhanba/graph-lib/issues"
-  },
-  "homepage": "https://github.com/zhanba/graph-lib/wiki",
   "keywords": [
     "graph"
   ],
