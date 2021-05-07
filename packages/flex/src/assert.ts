@@ -8,12 +8,12 @@ export function assertIsDefined<T>(val: T): asserts val is NonNullable<T> {
 
 export function assertIsString(val: any): asserts val is string {
   if (typeof val !== 'string') {
-    throw new AssertionError('Not a string!');
+    throw new AssertionError(`${val} is not a string!`);
   }
 }
 
 export function assertIsNumber(val: any): asserts val is number {
   if (typeof val !== 'number') {
-    throw new AssertionError('Not a number!');
+    throw new AssertionError(`${val} is not a number!`);
   }
 }

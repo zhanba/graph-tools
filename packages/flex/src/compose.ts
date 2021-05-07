@@ -26,8 +26,12 @@ class Compose extends SizePropsBridge {
 
   parseOrder(items: Node[]) {
     return items.sort((a, b) => {
-      const ar = a.order | 0;
-      const br = b.order | 0;
+      // @ts-ignore
+      // eslint-disable-next-line no-bitwise
+      const ar = a?.order | 0;
+      // @ts-ignore
+      // eslint-disable-next-line no-bitwise
+      const br = b?.order | 0;
       if (a.order && b.order) return ar > br ? 1 : -1;
       if (a.order) return ar > 0 ? 1 : -1;
       if (b.order) return br > 0 ? -1 : 1;
@@ -86,7 +90,7 @@ class Compose extends SizePropsBridge {
   parseAlignContent() {
     let { alignContent } = this.container;
     assertIsDefined(alignContent);
-    const crossAxisSize = this.container[this.crossSize];
+    let crossAxisSize = this.container[this.crossSize];
     let space = 0;
     const lineLength = this.flexLines.length;
     if (crossAxisSize) {
@@ -95,6 +99,7 @@ class Compose extends SizePropsBridge {
         linesCrossAxisSize += line.crossAxisSize;
       });
       // margin between lines
+      crossAxisSize = parseFloat(crossAxisSize as string);
       space = crossAxisSize - linesCrossAxisSize;
     }
     let linesMarginSize: number[] = [];

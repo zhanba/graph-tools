@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import { ParsedNodeProperties } from './property';
 import {
   flexProperties,
@@ -10,10 +11,18 @@ import {
   parseCombineValue,
   parsePercentValue,
   parseMarginAuto,
+  ObjectTyped,
 } from './util';
+import type { Node } from './node';
+import type { NodeProperties, Tuple4Number } from './types';
+import { assertIsDefined, assertIsString } from './assert';
 
 export class Config extends ParsedNodeProperties {
-  constructor(config = {}, node) {
+  config: NodeProperties;
+
+  node: Node;
+
+  constructor(config = {}, node: Node) {
     super();
     this.config = {};
     this.node = node;
@@ -39,7 +48,7 @@ export class Config extends ParsedNodeProperties {
     this.parseLayoutHeight();
   }
 
-  parseNumberValue(value, parentValue) {
+  parseNumberValue(value: any, parentValue?: any): number {
     if (value === 'auto' || typeof value === 'number') return value;
     if (!value) return 0;
     const percentValue = parsePercentValue(value);
@@ -49,7 +58,7 @@ export class Config extends ParsedNodeProperties {
       }
       value = percentValue * parentValue;
     } else if (/^[\d.-]+$/.test(value)) {
-      value = parseFloat(value, 10);
+      value = parseFloat(value);
     } else {
       throw new Error(`${value} is not a number`);
     }
@@ -61,16 +70,16 @@ export class Config extends ParsedNodeProperties {
     if (border) {
       border = parseCombineValue(border).map((item) => {
         return this.parseNumberValue(item);
-      });
+      }) as Tuple4Number;
     }
-    const borderList = ['borderTop', 'borderRight', 'borderBottom', 'borderLeft'];
+    const borderList = ['borderTop', 'borderRight', 'borderBottom', 'borderLeft'] as const;
     this.border = borderList.map((item, index) => {
       this[item] = this.parseNumberValue(this[item]) || border[index];
       if (this[item] < 0 || this[item] === 'auto') {
         throw new Error(`${item}:${this[item]} is not valid`);
       }
       return this[item];
-    });
+    }) as Tuple4Number;
   }
 
   parsePadding() {
@@ -78,16 +87,16 @@ export class Config extends ParsedNodeProperties {
     if (padding) {
       padding = parseCombineValue(padding).map((item) => {
         return this.parseNumberValue(item, 'width');
-      });
+      }) as Tuple4Number;
     }
-    const paddingList = ['paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft'];
+    const paddingList = ['paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft'] as const;
     this.padding = paddingList.map((item, index) => {
       this[item] = this.parseNumberValue(this[item], 'width') || padding[index];
       if (this[item] < 0 || this[item] === 'auto') {
         throw new Error(`${item}:${this[item]} is not valid`);
       }
       return this[item];
-    });
+    }) as Tuple4Number;
   }
 
   parseMargin() {
@@ -97,7 +106,7 @@ export class Config extends ParsedNodeProperties {
         return this.parseNumberValue(item, 'width');
       });
     }
-    const marginList = ['marginTop', 'marginRight', 'marginBottom', 'marginLeft'];
+    const marginList = ['marginTop', 'marginRight', 'marginBottom', 'marginLeft'] as const;
     this.margin = marginList.map((item, index) => {
       this[item] = this.parseNumberValue(this[item], 'width') || margin[index];
       return this[item];
@@ -110,6 +119,7 @@ export class Config extends ParsedNodeProperties {
       if (typeof flex === 'number') {
         this.flexGrow = this.flexGrow || flex;
       } else {
+        assertIsString(flex);
         const [flexFlow, flexShrink, flexBasis] = flex.split(/\s+/);
         if (!this.flexFlow) {
           this.flexFlow = flexFlow;
@@ -126,6 +136,7 @@ export class Config extends ParsedNodeProperties {
     this.flexGrow = parseFloat(this.flexGrow) || 0;
     let { flexBasis } = this;
     if (flexBasis) {
+      assertIsDefined(this.node.parent);
       const { flexDirection } = this.node.parent;
       const isRow = flexDirection === 'row' || flexDirection === 'row-reverse';
       flexBasis = this.parseNumberValue(flexBasis, isRow ? 'width' : 'height');
@@ -136,14 +147,14 @@ export class Config extends ParsedNodeProperties {
   }
 
   parseSize() {
-    const widths = ['width', 'minWidth', 'maxWidth'];
+    const widths = ['width', 'minWidth', 'maxWidth'] as const;
     widths.forEach((item) => {
       this[item] = this.parseNumberValue(this[item], 'width') || 0;
     });
     if (this.width && !this.offsetWidth) {
       this.offsetWidth = this.width;
     }
-    const heights = ['height', 'minHeight', 'maxHeight'];
+    const heights = ['height', 'minHeight', 'maxHeight'] as const;
     heights.forEach((item) => {
       this[item] = this.parseNumberValue(this[item], 'height') || 0;
     });
@@ -176,19 +187,21 @@ export class Config extends ParsedNodeProperties {
       alignSelf: alignSelfValues,
       alignContent: alignContentValues,
     };
-    Object.keys(props).forEach((item) => {
+    ObjectTyped.keys(props).forEach((item) => {
       if (this[item]) {
         const allowValues = props[item];
         if (allowValues.indexOf(this[item]) === -1) {
           throw new Error(`${item} value:${this[item]} is not valid`);
         }
       } else {
+        // eslint-disable-next-line prefer-destructuring
         this[item] = props[item][0];
       }
     });
   }
 
   getFlexBasis(type = 'width') {
+    assertIsDefined(this.node.parent);
     const { flexDirection } = this.node.parent;
     const { flexBasis } = this;
     if (flexBasis !== undefined && flexBasis !== 'auto') {

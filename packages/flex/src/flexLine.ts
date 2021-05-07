@@ -313,7 +313,7 @@ export class FlexLine extends SizePropsBridge {
       });
       return;
     }
-    let space = mainSize - this.mainAxisSize;
+    let space = parseFloat(mainSize as string) - this.mainAxisSize;
     if (space > 0) {
       if (this.hasFlexGrow()) {
         space = this.parseByFlexGrow(space);

@@ -8,7 +8,7 @@ import { ParsedNodeProperties } from './property';
 
 let id = 1;
 export class Node extends ParsedNodeProperties {
-  config: Config = {};
+  config: Config;
 
   parent?: Node;
 
@@ -51,11 +51,11 @@ export class Node extends ParsedNodeProperties {
   getComputedLayout(props: NodePropertyKey[] = []): Layout {
     let width = this.computedWidth;
     if (width === undefined) {
-      width = this.width;
+      width = this.width as number;
     }
     let height = this.computedHeight;
     if (height === undefined) {
-      height = this.height;
+      height = this.height as number;
     }
     const layout: Layout = { left: this.left || 0, top: this.top || 0, width, height };
     props.forEach((item) => {
