@@ -12,10 +12,10 @@ import type {
   NodeProperties,
 } from './types';
 
-export abstract class ParsedNodeProperties implements NodeProperties {
-  abstract computedWidth?: number;
+export class ParsedNodeProperties implements NodeProperties {
+  // computedWidth?: number;
 
-  abstract computedHeight?: number;
+  // computedHeight?: number;
 
   left?: number;
 

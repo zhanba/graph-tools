@@ -63,6 +63,8 @@
     "packages/graph-lib/test",
     "packages/flex/src",
     "packages/flex/test",
+    "packages/pailye/src",
+    "packages/pailye/test",
     "examples/*/src",
     "**/**.js"
   ],

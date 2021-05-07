@@ -8,6 +8,7 @@
     "pub": "lerna publish",
     "dev": "dumi dev",
     "test": "father test",
+    "test:watch": "father test --watch",
     "cov": "father test --coverage",
     "build:doc": "dumi build",
     "deploy": "gh-pages -d docdist",

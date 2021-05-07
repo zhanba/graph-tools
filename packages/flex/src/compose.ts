@@ -16,7 +16,6 @@ class Compose extends SizePropsBridge {
     const props = getProp(container.flexDirection);
     ObjectTyped.keys(props).forEach((prop) => {
       this[prop] = props[prop];
-      this.crossMaxSize = props.crossMaxSize;
     });
     container.children.forEach((item) => {
       item.config.parse();
@@ -27,8 +26,8 @@ class Compose extends SizePropsBridge {
 
   parseOrder(items: Node[]) {
     return items.sort((a, b) => {
-      const ar = a.order || 0;
-      const br = b.order || 0;
+      const ar = a.order | 0;
+      const br = b.order | 0;
       if (a.order && b.order) return ar > br ? 1 : -1;
       if (a.order) return ar > 0 ? 1 : -1;
       if (b.order) return br > 0 ? -1 : 1;
@@ -88,7 +87,6 @@ class Compose extends SizePropsBridge {
     let { alignContent } = this.container;
     assertIsDefined(alignContent);
     const crossAxisSize = this.container[this.crossSize];
-    assertIsNumber(crossAxisSize);
     let space = 0;
     const lineLength = this.flexLines.length;
     if (crossAxisSize) {

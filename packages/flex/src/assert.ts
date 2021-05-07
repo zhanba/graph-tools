@@ -14,6 +14,6 @@ export function assertIsString(val: any): asserts val is string {
 
 export function assertIsNumber(val: any): asserts val is number {
   if (typeof val !== 'number') {
-    throw new AssertionError('Not a string!');
+    throw new AssertionError('Not a number!');
   }
 }

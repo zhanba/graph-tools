@@ -1,3 +1,3 @@
-# g-layout
+# flex
 
-graphic layout engine
+flex layout for pailye

@@ -5,11 +5,10 @@ import Compose from './compose';
 import { flexProperties } from './util';
 import type { FlexDirectionProperty, Layout, NodeProperties, NodePropertyKey } from './types';
 import { ParsedNodeProperties } from './property';
-import { assertIsNumber } from './assert';
 
 let id = 1;
 export class Node extends ParsedNodeProperties {
-  config: Config;
+  config: Config = {};
 
   parent?: Node;
 
@@ -20,8 +19,8 @@ export class Node extends ParsedNodeProperties {
   layoutHeight!: number;
   layoutWidth!: number;
 
-  computedHeight!: number;
-  computedWidth!: number;
+  computedHeight?: number;
+  computedWidth?: number;
 
   constructor(config: NodeProperties) {
     super();
@@ -52,12 +51,10 @@ export class Node extends ParsedNodeProperties {
   getComputedLayout(props: NodePropertyKey[] = []): Layout {
     let width = this.computedWidth;
     if (width === undefined) {
-      assertIsNumber(this.width);
       width = this.width;
     }
     let height = this.computedHeight;
     if (height === undefined) {
-      assertIsNumber(this.height);
       height = this.height;
     }
     const layout: Layout = { left: this.left || 0, top: this.top || 0, width, height };
@@ -90,7 +87,9 @@ flexProperties.forEach((property) => {
       return this.config[property];
     },
     set(value) {
-      this.config[property] = value;
+      if (this.config) {
+        this.config[property] = value;
+      }
     },
   });
 });

@@ -237,11 +237,18 @@ export class FlexLine extends SizePropsBridge {
     assertIsDefined(justifyContent);
     const marginSizes = parseSpaceBetween(space, justifyContent, this.items.length);
     let pos = 0;
-    this.items.forEach((item, index) => {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const [index, item] of this.items.entries()) {
       pos += marginSizes[index] || 0;
       item[this.mainPos] = pos + parseMarginAuto(item[this.mainMarginStart]);
       pos += item[this.mainLayoutSize];
-    });
+    }
+    // this.items.forEach((item, index) => {
+    //   pos += marginSizes[index] || 0;
+    //   console.log('this', this);
+    //   item[this.mainPos] = pos + parseMarginAuto(item[this.mainMarginStart]);
+    //   pos += item[this.mainLayoutSize];
+    // });
   }
 
   parseByJustifyContentNegative(space: number) {
@@ -306,7 +313,6 @@ export class FlexLine extends SizePropsBridge {
       });
       return;
     }
-    assertIsNumber(mainSize);
     let space = mainSize - this.mainAxisSize;
     if (space > 0) {
       if (this.hasFlexGrow()) {

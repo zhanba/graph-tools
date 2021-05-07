@@ -1,0 +1,20 @@
+{
+  "name": "@pailye/flex",
+  "version": "0.1.0",
+  "description": "flex layout",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "typings": "dist/index.d.ts",
+  "sideEffects": false,
+  "repository": "git@github.com:zhanba/pailye.git",
+  "author": "zhanba <c5e1856@gmail.com>",
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT",
+  "files": [
+    "dist",
+    "README.md",
+    "package.json"
+  ]
+}
