@@ -1,7 +1,7 @@
 {
-  "name": "@pailye/flex",
+  "name": "@pailye/pailye",
   "version": "0.1.0",
-  "description": "flex layout",
+  "description": "graphic layout engine",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
   "typings": "dist/index.d.ts",
