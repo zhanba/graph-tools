@@ -1,6 +1,6 @@
 {
   "name": "@pailye/pailye",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "graphic layout engine",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
