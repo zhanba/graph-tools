@@ -9,6 +9,7 @@ import { preorder } from './preorder';
 import { prim } from './prim';
 import { tarjan } from './tarjan';
 import { topsort } from './topsort';
+import { longestPath } from './longest-path';
 
 const alg = {
   components,
@@ -23,6 +24,7 @@ const alg = {
   prim,
   tarjan,
   topsort,
+  longestPath,
 };
 
 export { alg };
