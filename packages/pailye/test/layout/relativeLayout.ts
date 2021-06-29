@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-import type { AbstractLayout } from '../../src/layout/index';
+import type { AbstractLayoutDefinition } from '../../src/layout/LayoutDefinition';
 
 // Implements a version of Android's RelativeLayout.
 // https://android.googlesource.com/platform/frameworks/base.git/+/master/core/java/android/widget/RelativeLayout.java
@@ -287,7 +287,7 @@ function positionChildVertical(position, constraint, blockSize, childBlockSize) 
   }
 }
 
-export class RelativeLayout implements AbstractLayout {
+export class RelativeLayout implements AbstractLayoutDefinition {
   static get inputProperties() {
     return ['--relative-constraints'];
   }

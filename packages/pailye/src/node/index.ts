@@ -1,20 +1,18 @@
-import { assertIsDefined } from '../assert';
-import { layoutRegistry } from '../layout/layoutRegistry';
-import type { StylePropertyMap } from '../style/styleMap';
-import type { CSSKeywordValue } from '../style/styleValue';
+import { StylePropertyMap } from '../style/styleMap';
+import type { StyleProperty } from '../style/types';
 import type { ComputedLayout, MeasureFn } from './types';
 
 let id = 1;
-export class Node {
+export class LayoutObject {
   private id: number;
 
   private style: StylePropertyMap;
 
   private dirty: boolean;
 
-  parent?: Node;
+  parent?: LayoutObject;
 
-  children: Node[];
+  children: LayoutObject[];
 
   get childCount() {
     return this.children.length;
@@ -35,15 +33,15 @@ export class Node {
     this.measureFn = measure;
   }
 
-  addChild(child: Node) {
+  addChild(child: LayoutObject) {
     this.children?.push(child);
   }
 
-  insertChild(index: number, child: Node) {
+  insertChild(index: number, child: LayoutObject) {
     this.children.splice(index, 0, child);
   }
 
-  removeChild(child: Node) {
+  removeChild(child: LayoutObject) {
     const index = this.children?.findIndex((node) => node.id === child.id);
     this.removeChildAtIndex(index);
   }
@@ -52,13 +50,20 @@ export class Node {
     this.children.splice(index, 1);
   }
 
-  replaceChildAtIndex(index: number, child: Node) {
+  replaceChildAtIndex(index: number, child: LayoutObject) {
     this.children.splice(index, 1, child);
   }
 
   setStyle() {}
 
-  getStyle() {
+  getStyle(...properties: StyleProperty[]) {
+    if (properties) {
+      const returnStyle = new StylePropertyMap();
+      properties.forEach((prop) => {
+        returnStyle.set(prop, this.style.get(prop));
+      });
+      return returnStyle;
+    }
     return this.style;
   }
 
@@ -70,13 +75,5 @@ export class Node {
     return this.dirty;
   }
 
-  computeLayout(size: { width?: number; height?: number }): ComputedLayout {
-    const layoutName = this.style.get<CSSKeywordValue>('position').value;
-    const LayoutCtor = layoutRegistry.getLayout(layoutName);
-    assertIsDefined(LayoutCtor);
-    const layout = new LayoutCtor();
-
-    layout.layout();
-    return {};
-  }
+  computeLayout(size: { width?: number; height?: number }): ComputedLayout {}
 }

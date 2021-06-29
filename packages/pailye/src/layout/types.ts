@@ -1,4 +1,9 @@
-/* eslint-disable max-classes-per-file */
+export type ContextId = string;
+
+export const enum LayoutTaskType {
+  Layout = 'layout',
+  IntrinsicSizes = 'intrinsic-sizes',
+}
 
 export interface LayoutOptions {
   /**
@@ -26,23 +31,16 @@ export interface IntrinsicSizes {
   readonly maxContentSize: number;
 }
 
-export interface LayoutFragment {
+/**
+ * 布局的结果
+ */
+export interface LayoutFragment<T = void> {
+  id: number;
   readonly inlineSize: number;
   readonly blockSize: number;
   inlineOffset: number;
   blockOffset: number;
-}
-
-export interface LayoutEdges {
-  readonly inlineStart: number;
-  readonly inlineEnd: number;
-
-  readonly blockStart: number;
-  readonly blockEnd: number;
-
-  // Convenience attributes for the sum in one direction.
-  readonly inline: number;
-  readonly block: number;
+  data: T;
 }
 
 enum BlockFragmentationType {
@@ -68,14 +66,7 @@ export interface LayoutConstraints {
   readonly data: any;
 }
 
-export interface FragmentResultOptions {
-  inlineSize: number;
-  blockSize: number;
-  autoBlockSize: number;
-  childFragments: LayoutFragment[];
-  data: any;
-}
-
-export class FragmentResult {
-  constructor(options: FragmentResultOptions = {}) {}
+export interface IntrinsicSizesResultOptions {
+  maxContentSize: number;
+  minContentSize: number;
 }

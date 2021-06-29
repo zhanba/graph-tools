@@ -1,9 +1,9 @@
-import type { LayoutChildren } from '../../src/layout/index';
-import { AbstractLayout } from '../../src/layout/index';
+import type { LayoutChildren } from '../../src/layout/LayoutChildren';
+import { AbstractLayoutDefinition } from '../../src/layout/LayoutDefinition';
 import type { LayoutEdges, LayoutConstraints, IntrinsicSizes } from '../../src/layout/types';
 import type { StylePropertyMap } from '../../src/style/styleMap';
 
-export class BlockLikeLayout extends AbstractLayout {
+export class BlockLikeLayout extends AbstractLayoutDefinition {
   async intrinsicSizes(
     children: LayoutChildren[],
     edges: LayoutEdges,
