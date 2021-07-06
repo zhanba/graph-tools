@@ -19,16 +19,20 @@ export interface LayoutContextOptions {
  * 每次layout 有单独的 context
  */
 @injectable()
-export class LayoutContext<T = void> {
+export class LayoutContext {
   contextId: ContextId;
-  workQueue: LayoutWorkTask<T>[] = [];
+  workQueue: LayoutWorkTask[] = [];
   mode: LayoutTaskType;
   constructor(@inject(LayoutContextOptions) protected readonly options: LayoutContextOptions) {
     this.contextId = guid();
     this.mode = options.mode;
   }
 
-  appendWorkTask(work: LayoutWorkTask<T>) {
+  appendWorkTask(work: LayoutWorkTask) {
     this.workQueue.push(work);
+  }
+
+  clearWorkQueue() {
+    this.workQueue = [];
   }
 }

@@ -1,8 +1,8 @@
-interface PromiseStatus {
-  isPending: boolean;
-  isRejected: boolean;
-  isFulfilled: boolean;
-  isResolved: boolean;
+interface PromiseStatus<T> {
+  isPending: () => boolean;
+  isRejected: () => boolean;
+  isFulfilled: () => boolean;
+  getFullFilledValue: () => T;
 }
 
 /**
@@ -10,21 +10,23 @@ interface PromiseStatus {
  * Based on: http://stackoverflow.com/questions/21485545/is-there-a-way-to-tell-if-an-es6-promise-is-fulfilled-rejected-resolved
  * But modified according to the specs of promises : https://promisesaplus.com/
  */
-export const makeQuerablePromise = (promise: Promise<any>) => {
+export const makeQuerablePromise = <T>(promise: Promise<T>) => {
   // Don't modify any promise that has been already modified.
   if ((promise as any).isRejected || (promise as any).isFulfilled)
-    return promise as any as PromiseStatus;
+    return promise as any as PromiseStatus<T>;
 
   // Set initial state
   let isPending = true;
   let isRejected = false;
   let isFulfilled = false;
+  let fullFilledValue: T;
 
   // Observe the promise, saving the fulfillment in a closure scope.
   const result = promise.then(
     (v) => {
       isFulfilled = true;
       isPending = false;
+      fullFilledValue = v;
       return v;
     },
     (e) => {
@@ -32,16 +34,19 @@ export const makeQuerablePromise = (promise: Promise<any>) => {
       isPending = false;
       throw e;
     },
-  ) as any as PromiseStatus;
+  ) as any as PromiseStatus<T>;
 
-  (result as any).isFulfilled = () => {
+  (result as PromiseStatus<T>).isFulfilled = () => {
     return isFulfilled;
   };
-  (result as any).isPending = () => {
+  (result as PromiseStatus<T>).isPending = () => {
     return isPending;
   };
-  (result as any).isRejected = () => {
+  (result as PromiseStatus<T>).isRejected = () => {
     return isRejected;
+  };
+  (result as PromiseStatus<T>).getFullFilledValue = () => {
+    return fullFilledValue;
   };
   return result;
 };

@@ -27,20 +27,10 @@ enum LayoutSizingMode {
 }
 
 export interface IntrinsicSizes {
-  readonly minContentSize: number;
-  readonly maxContentSize: number;
-}
-
-/**
- * 布局的结果
- */
-export interface LayoutFragment<T = void> {
-  id: number;
-  readonly inlineSize: number;
-  readonly blockSize: number;
-  inlineOffset: number;
-  blockOffset: number;
-  data: T;
+  readonly minContentInlineSize: number;
+  readonly minContentBlockSize: number;
+  readonly maxContentInlineSize: number;
+  readonly maxContentBlockSize: number;
 }
 
 enum BlockFragmentationType {
@@ -50,7 +40,7 @@ enum BlockFragmentationType {
   'region',
 }
 
-export interface LayoutConstraints {
+export interface LayoutConstraints<T = void> {
   readonly availableInlineSize: number;
   readonly availableBlockSize: number;
 
@@ -63,10 +53,5 @@ export interface LayoutConstraints {
   readonly blockFragmentationOffset?: number;
   readonly blockFragmentationType: BlockFragmentationType;
 
-  readonly data: any;
-}
-
-export interface IntrinsicSizesResultOptions {
-  maxContentSize: number;
-  minContentSize: number;
+  readonly data: T;
 }

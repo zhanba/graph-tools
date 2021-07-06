@@ -1,12 +1,16 @@
 import { ContainerModule } from 'inversify';
-import { LayoutRegistry } from '../../dist/src/layout/layoutRegistry';
+
 import { bindContributionProvider } from '../contribution-provider';
-import { FragmentResult } from './FragmentResult';
+import { AbsoluteLayout } from './algo/absoluteLayout';
+import { BlockLikeLayout } from './algo/blocklikeLayout';
+import { RelativeLayout } from './algo/realtiveLayout';
+import { FragmentResult, FragmentResultFactory, FragmentResultOptions } from './FragmentResult';
 import { LayoutChildren, LayoutChildrenFactory, LayoutChildrenOptions } from './LayoutChildren';
 import { LayoutContext, LayoutContextFactory, LayoutContextOptions } from './layoutContext';
 import { LayoutEdges, LayoutEdgesFactory, LayoutEdgesOptions } from './LayoutEdges';
 import { CurrentLayoutContext, CurrentLayoutObject, LayoutEngine } from './layoutEngine';
-import { LayoutContribution } from './layoutRegistry';
+import { LayoutFragment, LayoutFragmentFactory, LayoutFragmentOptions } from './LayoutFragment';
+import { LayoutContribution, LayoutRegistry } from './layoutRegistry';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const layoutModule = new ContainerModule((bind, unbind, isBound, rebind) => {
@@ -17,9 +21,6 @@ export const layoutModule = new ContainerModule((bind, unbind, isBound, rebind) 
   bind(CurrentLayoutContext).toDynamicValue((context) => {
     return context.container.get(LayoutEngine).getCurrentLayoutContext();
   });
-
-  bind(LayoutRegistry).toSelf().inSingletonScope();
-  bindContributionProvider(bind, LayoutContribution);
 
   bind(LayoutChildren).toSelf();
   bind(LayoutChildrenFactory).toFactory((context) => (options: LayoutChildrenOptions) => {
@@ -35,13 +36,36 @@ export const layoutModule = new ContainerModule((bind, unbind, isBound, rebind) 
     return container.get(LayoutEdges);
   });
 
+  bind(LayoutContext).toSelf();
   bind<LayoutContextFactory>(LayoutContextFactory).toFactory((context) => (options) => {
     const container = context.container.createChild();
-    container.bind(LayoutContext).toSelf().inSingletonScope();
     container.bind(LayoutContextOptions).toConstantValue(options);
-
-    container.bind(FragmentResult).toSelf();
-    // container.bind(LayoutWorkTask).toSelf();
     return container.get(LayoutContext);
   });
+
+  bind(FragmentResult).toSelf();
+  bind(FragmentResultFactory).toFactory((context) => (options) => {
+    const container = context.container.createChild();
+    container.bind(FragmentResultOptions).toConstantValue(options);
+    return container.get(FragmentResult);
+  });
+
+  bind(LayoutFragment).toSelf();
+  bind(LayoutFragmentFactory).toFactory((context) => (options) => {
+    const container = context.container.createChild();
+    container.bind(LayoutFragmentOptions).toConstantValue(options);
+    return container.get(LayoutFragment);
+  });
+
+  bind(LayoutRegistry).toSelf().inSingletonScope();
+  bindContributionProvider(bind, LayoutContribution);
+
+  bind(AbsoluteLayout).toSelf().inSingletonScope();
+  bind(LayoutContribution).toService(AbsoluteLayout);
+
+  bind(RelativeLayout).toSelf().inSingletonScope();
+  bind(LayoutContribution).toService(RelativeLayout);
+
+  bind(BlockLikeLayout).toSelf().inSingletonScope();
+  bind(LayoutContribution).toService(BlockLikeLayout);
 });

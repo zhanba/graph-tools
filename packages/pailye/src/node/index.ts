@@ -1,6 +1,18 @@
+import { container } from '../inversify.config';
+import { LayoutEngine } from '../layout/layoutEngine';
+import type { IntrinsicSizes } from '../layout/types';
 import { StylePropertyMap } from '../style/styleMap';
 import type { StyleProperty } from '../style/types';
 import type { ComputedLayout, MeasureFn } from './types';
+
+const layoutEngine = container.get(LayoutEngine);
+
+interface LayoutObjectIntrinsicSizes {
+  minContentInlineSize: number;
+  minContentBlockSize: number;
+  maxContentInlineSize: number;
+  maxContentBlockSize: number;
+}
 
 let id = 1;
 export class LayoutObject {
@@ -13,6 +25,12 @@ export class LayoutObject {
   parent?: LayoutObject;
 
   children: LayoutObject[];
+
+  private internalIntrisicSizes?: LayoutObjectIntrinsicSizes;
+
+  get intrisicSizes() {
+    return this.internalIntrisicSizes;
+  }
 
   get childCount() {
     return this.children.length;
@@ -29,8 +47,16 @@ export class LayoutObject {
     this.dirty = false;
   }
 
+  /**
+   * set the intrinsic size of leaf node, different basic shape has different size, compsed shape has
+   * @param measure measure function
+   */
   setMeasure(measure: MeasureFn) {
     this.measureFn = measure;
+  }
+
+  setIntrisicSizes(intrisicSizes: IntrinsicSizes) {
+    this.internalIntrisicSizes = intrisicSizes;
   }
 
   addChild(child: LayoutObject) {
@@ -75,5 +101,7 @@ export class LayoutObject {
     return this.dirty;
   }
 
-  computeLayout(size: { width?: number; height?: number }): ComputedLayout {}
+  computeLayout(size: { width?: number; height?: number }): ComputedLayout {
+    layoutEngine.layoutEntry();
+  }
 }

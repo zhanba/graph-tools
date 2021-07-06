@@ -1,9 +1,17 @@
-import type { LayoutChildren } from '../../src/layout/LayoutChildren';
-import { AbstractLayoutDefinition } from '../../src/layout/LayoutDefinition';
-import type { LayoutEdges, LayoutConstraints, IntrinsicSizes } from '../../src/layout/types';
-import type { StylePropertyMap } from '../../src/style/styleMap';
+/* eslint-disable max-classes-per-file */
+import type { FragmentResult, FragmentResultOptions } from '../FragmentResult';
+import type { LayoutChildren } from '../LayoutChildren';
+import { AbstractLayoutDefinition } from '../LayoutDefinition';
+import type { LayoutEdges } from '../LayoutEdges';
+import type { LayoutConstraints, IntrinsicSizes } from '../types';
+import type { StylePropertyMap } from '../../style/styleMap';
+import type { LayoutContribution, LayoutRegistry } from '../layoutRegistry';
 
-export class BlockLikeLayout extends AbstractLayoutDefinition {
+/**
+ * The layout algorithm below performs a block-like layout (positioning fragments sequentially in the block direction),
+ *  while centering its children in the inline direction.
+ */
+export class BlockLikeLayoutDefinition extends AbstractLayoutDefinition {
   async intrinsicSizes(
     children: LayoutChildren[],
     edges: LayoutEdges,
@@ -32,7 +40,7 @@ export class BlockLikeLayout extends AbstractLayoutDefinition {
     edges: LayoutEdges,
     constraints: LayoutConstraints,
     styleMap: StylePropertyMap,
-  ): Promise<void> {
+  ): Promise<FragmentResultOptions<void> | FragmentResult<void>> {
     // Determine our (inner) available size.
     const availableInlineSize = constraints.fixedInlineSize
       ? constraints.fixedInlineSize - edges.inline
@@ -70,5 +78,11 @@ export class BlockLikeLayout extends AbstractLayoutDefinition {
       autoBlockSize,
       childFragments,
     };
+  }
+}
+
+export class BlockLikeLayout implements LayoutContribution {
+  registerLayout(layoutRegistry: LayoutRegistry) {
+    layoutRegistry.registerLayout('blockLike', BlockLikeLayoutDefinition);
   }
 }

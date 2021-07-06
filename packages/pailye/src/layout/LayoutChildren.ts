@@ -4,7 +4,9 @@ import type { LayoutObject } from '../node';
 import type { StylePropertyMap } from '../style/styleMap';
 import { Deferred } from '../util';
 import { LayoutContext } from './layoutContext';
-import type { ContextId, LayoutConstraints } from './types';
+import { CurrentLayoutContext } from './layoutEngine';
+import type { LayoutFragment } from './LayoutFragment';
+import type { ContextId, IntrinsicSizes, LayoutConstraints } from './types';
 import { LayoutTaskType } from './types';
 
 export const LayoutChildrenFactory = Symbol('LayoutChildrenFactory');
@@ -29,7 +31,7 @@ export class LayoutChildren {
 
   constructor(
     @inject(LayoutChildrenOptions) protected readonly options: LayoutChildrenOptions,
-    @inject(LayoutContext) protected readonly layoutContext: LayoutContext,
+    @inject(CurrentLayoutContext) protected readonly layoutContext: LayoutContext,
   ) {
     this.contextId = options.contextId;
     this.node = options.node;
@@ -37,21 +39,20 @@ export class LayoutChildren {
     this.currentLayoutContext = layoutContext;
   }
 
-  intrinsicSizes() {
+  intrinsicSizes(): Promise<IntrinsicSizes> {
     if (this.contextId !== this.currentLayoutContext.contextId) {
       throw new Error('Invalid State: wrong layout context');
     }
-    const promise = new Deferred();
+    const deferred = new Deferred<IntrinsicSizes>();
     this.currentLayoutContext.appendWorkTask({
       layoutChild: this,
       taskType: LayoutTaskType.IntrinsicSizes,
-      promise,
+      deferred,
     });
-    return promise;
+    return deferred.promise;
   }
 
-  layoutNextFragment(constraints: LayoutConstraints) {
-    const promise = new Deferred();
+  layoutNextFragment(constraints: LayoutConstraints): Promise<LayoutFragment> {
     if (this.contextId !== this.currentLayoutContext.contextId) {
       throw new Error('Invalid State: wrong layout context');
     }
@@ -59,12 +60,13 @@ export class LayoutChildren {
     if (this.currentLayoutContext.mode === LayoutTaskType.IntrinsicSizes) {
       throw new Error('Not Supported: cant call layoutNextFragment in intrinsicSizes');
     }
+    const deferred = new Deferred<LayoutFragment>();
     this.currentLayoutContext.appendWorkTask({
       layoutConstraints: constraints,
       layoutChild: this,
       taskType: LayoutTaskType.Layout,
-      promise,
+      deferred,
     });
-    return promise;
+    return deferred.promise;
   }
 }

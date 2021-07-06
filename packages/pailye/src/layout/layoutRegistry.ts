@@ -4,7 +4,7 @@ import type { LayoutDefinitionCtor } from './LayoutDefinition';
 export const LayoutContribution = Symbol('LayoutContribution');
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export interface LayoutContribution {
-  registerLayout: (colors: LayoutRegistry) => void;
+  registerLayout: (layoutRegistry: LayoutRegistry) => void;
 }
 
 @injectable()

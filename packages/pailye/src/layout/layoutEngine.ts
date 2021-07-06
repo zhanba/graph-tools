@@ -1,7 +1,7 @@
 import type { LayoutObject } from '../node';
-import type { CSSKeywordValue } from '../style/styleValue';
+import type { CSSKeywordValue, CSSUnitValue } from '../style/styleValue';
 import { LayoutContribution, LayoutRegistry } from './layoutRegistry';
-import type { LayoutConstraints } from './types';
+import type { IntrinsicSizes, LayoutConstraints } from './types';
 import { LayoutTaskType } from './types';
 import { inject, injectable, named } from 'inversify';
 import { ContributionProvider } from '../contribution-provider';
@@ -12,6 +12,10 @@ import { LayoutChildrenFactory } from './LayoutChildren';
 import { LayoutEdgesFactory } from './LayoutEdges';
 import type { LayoutWorkTask } from './LayoutWorkTask';
 import { makeQuerablePromise } from '../util';
+import { PropertyNameMap } from '../style/propertyName';
+import { FragmentResult, FragmentResultFactory } from './FragmentResult';
+import type { LayoutFragment, LayoutFragmentOptions } from './LayoutFragment';
+import { LayoutFragmentFactory } from './LayoutFragment';
 
 export const CurrentLayoutObject = Symbol('CurrentLayoutObject');
 export const CurrentLayoutContext = Symbol('CurrentLayoutContext');
@@ -25,6 +29,8 @@ export class LayoutEngine {
   protected layoutContextFactory: LayoutContextFactory;
   protected layoutChildrenFactory: LayoutChildrenFactory;
   protected layoutEdgesFactory: LayoutEdgesFactory;
+  protected fragmentResultFactory: FragmentResultFactory;
+  protected layoutFragmentFactory: LayoutFragmentFactory;
 
   constructor(
     @inject(LayoutRegistry)
@@ -35,6 +41,10 @@ export class LayoutEngine {
     protected readonly _layoutChildrenFactory: LayoutChildrenFactory,
     @inject(LayoutEdgesFactory)
     protected readonly _layoutEdgesFactory: LayoutEdgesFactory,
+    @inject(FragmentResultFactory)
+    protected readonly _fragmentResultFactory: FragmentResultFactory,
+    @inject(LayoutFragmentFactory)
+    protected readonly _layoutFragmentFactory: LayoutFragmentFactory,
     @inject(ContributionProvider)
     @named(LayoutContribution)
     protected readonly layoutContributions: ContributionProvider<LayoutContribution>,
@@ -43,23 +53,11 @@ export class LayoutEngine {
     this.layoutContextFactory = _layoutContextFactory;
     this.layoutChildrenFactory = _layoutChildrenFactory;
     this.layoutEdgesFactory = _layoutEdgesFactory;
+    this.fragmentResultFactory = _fragmentResultFactory;
+    this.layoutFragmentFactory = _layoutFragmentFactory;
     layoutContributions.getContributions().forEach((layoutContrib) => {
       layoutContrib.registerLayout(_layoutRegistry);
     });
-  }
-
-  // This function takes the root of the box-tree, a LayoutConstraints object, and a
-  // BreakToken to (if paginating for printing for example) and generates a
-  // LayoutFragment.
-  layoutEntry(rootNode: LayoutObject, rootPageConstraints: LayoutConstraints) {
-    return this.layoutFragment({
-      layoutChild: rootNode,
-      layoutConstraints: rootPageConstraints,
-    });
-  }
-
-  computeLayout() {
-    //
   }
 
   getCurrentLayoutObject() {
@@ -70,12 +68,27 @@ export class LayoutEngine {
     return this.currentLayoutContext;
   }
 
-  protected determineIntrinsicSizes(node: LayoutObject, childNodes: LayoutObject[]) {
-    const name = node.getStyle().get<CSSKeywordValue>('layout').value;
-    this.invokeIntrinsicSizesCallback(name, node, childNodes);
+  // This function takes the root of the box-tree, a LayoutConstraints object, and a
+  // BreakToken to (if paginating for printing for example) and generates a
+  // LayoutFragment.
+  computeLayout(rootNode: LayoutObject, rootPageConstraints: LayoutConstraints): LayoutFragment {
+    this.determineIntrinsicSizes(rootNode, rootNode.children);
+    return this.generateFragment(rootNode, rootNode.children, rootPageConstraints);
   }
 
-  protected createLayoutChild() {}
+  protected getLayoutDefinitionName(node: LayoutObject) {
+    return node.getStyle().get<CSSKeywordValue>(PropertyNameMap.LAYOUT).value;
+  }
+
+  /**
+   * calculate the min/max content size of node
+   * @param node current layout object
+   * @param childNodes children of the current node
+   */
+  protected determineIntrinsicSizes(node: LayoutObject, childNodes: LayoutObject[]) {
+    const name = this.getLayoutDefinitionName(node);
+    this.invokeIntrinsicSizesCallback(name, node, childNodes);
+  }
 
   protected invokeIntrinsicSizesCallback(
     name: string,
@@ -105,20 +118,21 @@ export class LayoutEngine {
 
     const styleMap = node.getStyle(...inputProperties);
 
-    // TODO compare to cache
+    // TODO compare to cache ( children edges styleMap )
 
     const value = layoutInstance.intrinsicSizes(children, edges, styleMap);
 
-    this.runWorkQueue(value, this.currentLayoutContext.workQueue);
+    const intrinsicSizesValue = this.runWorkQueue(value, this.currentLayoutContext.workQueue);
+    node.setIntrisicSizes(intrinsicSizesValue);
   }
 
   protected generateFragment(
     node: LayoutObject,
     childNodes: LayoutObject[],
     layoutConstraints: LayoutConstraints,
-  ) {
-    const name = node.getStyle().get<CSSKeywordValue>('layout').value;
-    this.invokeLayoutCallback(name, node, childNodes, layoutConstraints);
+  ): LayoutFragment {
+    const name = this.getLayoutDefinitionName(node);
+    return this.invokeLayoutCallback(name, node, childNodes, layoutConstraints);
   }
 
   protected invokeLayoutCallback(
@@ -126,7 +140,7 @@ export class LayoutEngine {
     node: LayoutObject,
     childNodes: LayoutObject[],
     layoutConstraints: LayoutConstraints,
-  ) {
+  ): LayoutFragment {
     const LayoutDef = this.layoutRegistry.getLayout(name);
     const layoutInstance = new LayoutDef();
     this.currentLayoutContext = this.layoutContextFactory({ mode: LayoutTaskType.Layout });
@@ -150,54 +164,74 @@ export class LayoutEngine {
 
     const styleMap = node.getStyle(...inputProperties);
 
-    // TODO compare cahche, children styleMap layoutConstraints
+    // TODO compare to cahche ( children styleMap layoutConstraints )
 
     const value = layoutInstance.layout(children, edges, layoutConstraints, styleMap);
+    const fragmentResultvalue = this.runWorkQueue(value, this.currentLayoutContext.workQueue);
+    const fragmentResult =
+      fragmentResultvalue instanceof FragmentResult
+        ? fragmentResultvalue
+        : this.fragmentResultFactory(fragmentResultvalue);
+
+    return this.layoutFragmentFactory({
+      inlineSize: fragmentResult.inlineSize,
+      blockSize: fragmentResult.blockSize,
+      data: fragmentResult.data,
+    });
   }
 
   protected runWorkQueue<T>(promise: Promise<T>, workQueue: LayoutWorkTask[]): T {
-    if (workQueue.length > 0 && makeQuerablePromise(promise).isPending) {
+    const querablePromise = makeQuerablePromise(promise);
+    if (workQueue.length > 0 && querablePromise.isPending()) {
       workQueue.forEach((workTask) => {
         if (workTask.taskType === LayoutTaskType.IntrinsicSizes) {
-          const { layoutChild } = workTask;
+          const { layoutChild, deferred } = workTask;
           const { node } = layoutChild;
+          deferred.resolve(this.getNodeIntrisicSizes(node));
+        }
+
+        if (workTask.taskType === LayoutTaskType.Layout) {
+          const { layoutChild, deferred, layoutConstraints } = workTask;
+          const { node } = layoutChild;
+          const fragment = this.getNodeFragment(node, layoutConstraints);
+          deferred.resolve(this.layoutFragmentFactory(fragment));
         }
       });
+      this.currentLayoutContext?.clearWorkQueue();
     }
+
+    if (!querablePromise.isFulfilled()) {
+      throw new Error('promise not fullfilled!');
+    }
+    return querablePromise.getFullFilledValue();
   }
 
-  // protected selectLayoutAlgorithmForNode(node: LayoutObject): LayoutDefinitionCtor {
-  //   const layoutProp = node.getStyle().get<CSSKeywordValue>('layout');
-  //   return this.layoutRegistry.getLayout(layoutProp.value);
-  // }
+  protected getNodeIntrisicSizes(node: LayoutObject): IntrinsicSizes {
+    // TODO
+    // calculate from border box, depend on writing mode of current layout
+    const minWidth = node.getStyle().get<CSSUnitValue>(PropertyNameMap.MIN_WIDTH).value;
+    const maxWidth = node.getStyle().get<CSSUnitValue>(PropertyNameMap.MAX_WIDTH).value;
+    const minHeight = node.getStyle().get<CSSUnitValue>(PropertyNameMap.MIN_HEIGHT).value;
+    const maxHeight = node.getStyle().get<CSSUnitValue>(PropertyNameMap.MAX_HEIGHT).value;
+    return {
+      minContentInlineSize: minWidth,
+      maxContentInlineSize: maxWidth,
+      minContentBlockSize: minHeight,
+      maxContentBlockSize: maxHeight,
+    };
+  }
 
-  // // This function takes a LayoutFragmentRequest and calls the appropriate
-  // // layout algorithm to generate the a LayoutFragment.
-  // protected layoutFragment(fragmentRequest: LayoutFragmentRequest) {
-  //   const node = fragmentRequest.layoutChild;
-  //   const LayoutDef = this.selectLayoutAlgorithmForNode(node);
-  //   const layout = new LayoutDef();
-  //   const fragmentRequestGenerator = layout.layout(
-  //     node.children,
-  //     edges,
-  //     fragmentRequest.layoutConstraints,
-  //     node.getStyle(),
-  //   );
-
-  //   let nextFragmentRequest = fragmentRequestGenerator.next();
-
-  //   while (!nextFragmentRequest.done) {
-  //     // A user-agent may decide to perform layout to generate the fragments in
-  //     // parallel on separate threads. This example performs them synchronously
-  //     // in order.
-  //     const fragments = nextFragmentRequest.value.map(layoutFragment);
-
-  //     // A user-agent may decide to yield for other work (garbage collection for
-  //     // example) before resuming this layout work. This example just performs
-  //     // layout synchronously without any ability to yield.
-  //     nextFragmentRequest = fragmentRequestGenerator.next(fragments);
-  //   }
-
-  //   return nextFragmentRequest.value; // Return the final LayoutFragment.
-  // }
+  protected getNodeFragment(
+    node: LayoutObject,
+    constraints: LayoutConstraints,
+  ): LayoutFragmentOptions {
+    // TODO
+    const width = node.getStyle().get<CSSUnitValue>(PropertyNameMap.WIDTH).value;
+    const height = node.getStyle().get<CSSUnitValue>(PropertyNameMap.HEIGHT).value;
+    return {
+      inlineSize: width,
+      blockSize: height,
+      data: undefined,
+    };
+  }
 }

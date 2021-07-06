@@ -1,10 +1,17 @@
 import type { Deferred } from '../util';
 import type { LayoutChildren } from './LayoutChildren';
-import type { LayoutConstraints, LayoutTaskType } from './types';
+import type { LayoutFragment } from './LayoutFragment';
+import type { IntrinsicSizes, LayoutConstraints, LayoutTaskType } from './types';
 
-export interface LayoutWorkTask<T = void> {
-  layoutConstraints?: LayoutConstraints;
-  layoutChild: LayoutChildren;
-  taskType: LayoutTaskType;
-  promise: Deferred<T>;
-}
+export type LayoutWorkTask =
+  | {
+      layoutConstraints: LayoutConstraints;
+      layoutChild: LayoutChildren;
+      taskType: LayoutTaskType.Layout;
+      deferred: Deferred<LayoutFragment>;
+    }
+  | {
+      layoutChild: LayoutChildren;
+      taskType: LayoutTaskType.IntrinsicSizes;
+      deferred: Deferred<IntrinsicSizes>;
+    };

@@ -1,15 +1,21 @@
+/* eslint-disable @typescript-eslint/no-redeclare */
 import { inject, injectable } from 'inversify';
-import type { LayoutObject } from '../node';
+import { LayoutObject } from '../node';
 import { LayoutContext } from './layoutContext';
-import type { ContextId, LayoutFragment } from './types';
+import { CurrentLayoutContext, CurrentLayoutObject } from './layoutEngine';
+import type { LayoutFragment } from './LayoutFragment';
+import type { ContextId } from './types';
+
+export const FragmentResultFactory = Symbol('FragmentResultFactory');
+export interface FragmentResultFactory {
+  (options: FragmentResultOptions): FragmentResult;
+}
 
 /**
  * The web developer defined layout method can return either a FragmentResultOptions or a FragmentResult.
  */
 
 export const FragmentResultOptions = Symbol('FragmentResultOptions');
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
 export interface FragmentResultOptions<T = void> {
   inlineSize: number;
   blockSize: number;
@@ -32,13 +38,15 @@ export class FragmentResult<T = void> {
   data: T;
 
   constructor(
-    @inject(LayoutContext) protected readonly layoutContext: LayoutContext,
+    @inject(CurrentLayoutContext) protected readonly layoutContext: LayoutContext,
     @inject(FragmentResultOptions) protected readonly options: FragmentResultOptions<T>,
+    @inject(CurrentLayoutObject) protected readonly _currentLayoutObject: LayoutObject,
   ) {
     this.contextId = layoutContext.contextId;
     this.inlineSize = options?.inlineSize;
     this.blockSize = options?.blockSize;
     this.childFragments = options?.childFragments;
     this.data = options.data;
+    this.node = _currentLayoutObject;
   }
 }
