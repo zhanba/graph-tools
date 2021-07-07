@@ -522,7 +522,7 @@ export class Graph {
    * @param label default edge label or default edge label factory function.
    * @returns the graph, allowing this to be chained with other functions.
    */
-  public setDefaultEdgeLabel(label: LabelValue | IDefaultLabelFn) {
+  public setDefaultEdgeLabel(label: LabelValue | DefaultEdgeLabelFn) {
     if (typeof label !== 'function') {
       this.defaultEdgeLabelFn = () => label;
     } else {

@@ -1,4 +1,4 @@
-export const enum PropertyNameMap {
+export enum PropertyNameMap {
   LAYOUT = 'layout',
 
   WIDTH = 'width',

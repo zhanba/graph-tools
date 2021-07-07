@@ -1,4 +1,5 @@
 /* eslint-disable no-param-reassign */
+// @ts-nocheck
 import { ParsedNodeProperties } from './property';
 import {
   flexProperties,

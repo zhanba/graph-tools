@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import type { LayoutObject } from '../node';
 import type { CSSKeywordValue, CSSUnitValue } from '../style/styleValue';
 import { LayoutContribution, LayoutRegistry } from './layoutRegistry';
@@ -68,12 +69,15 @@ export class LayoutEngine {
     return this.currentLayoutContext;
   }
 
-  // This function takes the root of the box-tree, a LayoutConstraints object, and a
-  // BreakToken to (if paginating for printing for example) and generates a
-  // LayoutFragment.
-  computeLayout(rootNode: LayoutObject, rootPageConstraints: LayoutConstraints): LayoutFragment {
+  /**
+   * This function takes the root of the box-tree, a LayoutConstraints object, and compute the position of every node in the tree
+   * @param rootNode root node of the layout object tree
+   * @param rootPageConstraints layout constraints
+   * @returns
+   */
+  computeLayout(rootNode: LayoutObject, rootPageConstraints: LayoutConstraints): void {
     this.determineIntrinsicSizes(rootNode, rootNode.children);
-    return this.generateFragment(rootNode, rootNode.children, rootPageConstraints);
+    this.calculateLayout(rootNode, rootNode.children, rootPageConstraints);
   }
 
   protected getLayoutDefinitionName(node: LayoutObject) {
@@ -86,18 +90,19 @@ export class LayoutEngine {
    * @param childNodes children of the current node
    */
   protected determineIntrinsicSizes(node: LayoutObject, childNodes: LayoutObject[]) {
-    const name = this.getLayoutDefinitionName(node);
-    this.invokeIntrinsicSizesCallback(name, node, childNodes);
+    const layoutName = this.getLayoutDefinitionName(node);
+    this.invokeIntrinsicSizesCallback(layoutName, node, childNodes);
   }
 
   protected invokeIntrinsicSizesCallback(
-    name: string,
+    layoutName: string,
     node: LayoutObject,
     childNodes: LayoutObject[],
   ) {
-    const LayoutDef = this.layoutRegistry.getLayout(name);
+    const LayoutDef = this.layoutRegistry.getLayout(layoutName);
     const layoutInstance = new LayoutDef();
-    this.currentLayoutContext = this.layoutContextFactory({ mode: LayoutTaskType.IntrinsicSizes });
+    const context = this.layoutContextFactory({ mode: LayoutTaskType.IntrinsicSizes });
+    this.currentLayoutContext = context;
     const { inputProperties } = LayoutDef;
     const children: LayoutChildren[] = [];
 
@@ -107,9 +112,8 @@ export class LayoutEngine {
 
     childNodes.forEach((childNode) => {
       const layoutChild = this.layoutChildrenFactory({
-        name,
         node: childNode,
-        contextId: this.currentLayoutContext!.contextId,
+        context,
       });
       children.push(layoutChild);
     });
@@ -126,24 +130,25 @@ export class LayoutEngine {
     node.setIntrisicSizes(intrinsicSizesValue);
   }
 
-  protected generateFragment(
+  protected calculateLayout(
     node: LayoutObject,
     childNodes: LayoutObject[],
     layoutConstraints: LayoutConstraints,
-  ): LayoutFragment {
-    const name = this.getLayoutDefinitionName(node);
-    return this.invokeLayoutCallback(name, node, childNodes, layoutConstraints);
+  ) {
+    const layoutName = this.getLayoutDefinitionName(node);
+    this.invokeLayoutCallback(layoutName, node, childNodes, layoutConstraints);
   }
 
   protected invokeLayoutCallback(
-    name: string,
+    layoutName: string,
     node: LayoutObject,
     childNodes: LayoutObject[],
     layoutConstraints: LayoutConstraints,
-  ): LayoutFragment {
-    const LayoutDef = this.layoutRegistry.getLayout(name);
+  ) {
+    const LayoutDef = this.layoutRegistry.getLayout(layoutName);
     const layoutInstance = new LayoutDef();
-    this.currentLayoutContext = this.layoutContextFactory({ mode: LayoutTaskType.Layout });
+    const context = this.layoutContextFactory({ mode: LayoutTaskType.Layout });
+    this.currentLayoutContext = context;
     const { inputProperties } = LayoutDef;
     const children: LayoutChildren[] = [];
 
@@ -153,9 +158,8 @@ export class LayoutEngine {
 
     childNodes.forEach((childNode) => {
       const layoutChild = this.layoutChildrenFactory({
-        name,
         node: childNode,
-        contextId: this.currentLayoutContext!.contextId,
+        context,
       });
       children.push(layoutChild);
     });
@@ -173,11 +177,13 @@ export class LayoutEngine {
         ? fragmentResultvalue
         : this.fragmentResultFactory(fragmentResultvalue);
 
-    return this.layoutFragmentFactory({
+    const layoutFragment = this.layoutFragmentFactory({
       inlineSize: fragmentResult.inlineSize,
       blockSize: fragmentResult.blockSize,
       data: fragmentResult.data,
     });
+
+    node.setComputedLayout(layoutFragment);
   }
 
   protected runWorkQueue<T>(promise: Promise<T>, workQueue: LayoutWorkTask[]): T {
@@ -231,7 +237,7 @@ export class LayoutEngine {
     return {
       inlineSize: width,
       blockSize: height,
-      data: undefined,
+      data: constraints.data,
     };
   }
 }

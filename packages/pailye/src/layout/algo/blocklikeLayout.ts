@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable max-classes-per-file */
 import type { FragmentResult, FragmentResultOptions } from '../FragmentResult';
 import type { LayoutChildren } from '../LayoutChildren';
@@ -23,17 +24,22 @@ export class BlockLikeLayoutDefinition extends AbstractLayoutDefinition {
       }),
     );
 
-    const maxContentSize =
+    const maxContentInlineSize =
       childrenSizes.reduce((max, childSizes) => {
-        return Math.max(max, childSizes.maxContentSize);
+        return Math.max(max, childSizes.maxContentInlineSize);
       }, 0) + edges.inline;
 
-    const minContentSize =
+    const minContentInlineSize =
       childrenSizes.reduce((max, childSizes) => {
-        return Math.max(max, childSizes.minContentSize);
+        return Math.max(max, childSizes.maxContentInlineSize);
       }, 0) + edges.inline;
 
-    return { maxContentSize, minContentSize };
+    return {
+      maxContentInlineSize,
+      minContentInlineSize,
+      maxContentBlockSize: 0,
+      minContentBlockSize: 0,
+    };
   }
   async layout(
     children: LayoutChildren[],
@@ -44,13 +50,19 @@ export class BlockLikeLayoutDefinition extends AbstractLayoutDefinition {
     // Determine our (inner) available size.
     const availableInlineSize = constraints.fixedInlineSize
       ? constraints.fixedInlineSize - edges.inline
-      : null;
+      : 0;
     const availableBlockSize = constraints.fixedBlockSize
       ? constraints.fixedBlockSize - edges.block
-      : null;
+      : 0;
 
     let childFragments = [];
-    const childConstraints = { availableInlineSize, availableBlockSize };
+    const childConstraints = {
+      availableInlineSize,
+      availableBlockSize,
+      percentageInlineSize: availableInlineSize,
+      percentageBlockSize: availableBlockSize,
+      data: constraints.data,
+    };
 
     childFragments = await Promise.all(
       children.map((child) => {
@@ -77,6 +89,9 @@ export class BlockLikeLayoutDefinition extends AbstractLayoutDefinition {
     return {
       autoBlockSize,
       childFragments,
+      inlineSize: availableInlineSize,
+      blockSize: availableBlockSize,
+      data: constraints.data,
     };
   }
 }

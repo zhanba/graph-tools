@@ -1,7 +1,8 @@
+import type { dijkstraAll } from '../../src/alg/dijkstra';
 import { Graph } from '../../src/graph';
 import { weightFn } from './util';
 
-function tests(sp) {
+function tests(sp: typeof dijkstraAll) {
   describe('allShortestPaths', () => {
     it('returns 0 for the node itself', () => {
       const g = new Graph();
@@ -61,7 +62,7 @@ function tests(sp) {
       g.setEdge('a', 'b');
       g.setEdge('b', 'c');
 
-      expect(sp(g, undefined, v => g.inEdges(v))).toEqual({
+      expect(sp(g, undefined, (v) => g.inEdges(v))).toEqual({
         a: {
           a: { distance: 0 },
           b: { distance: Number.POSITIVE_INFINITY },

@@ -637,7 +637,7 @@ export class CSSMathClamp extends CSSMathValue {
 /**
  * just shorthand methed
  */
-export class CSS {
+export class TypedCSS {
   static number(value: number): CSSUnitValue {
     return new CSSUnitValue(value, 'number');
   }

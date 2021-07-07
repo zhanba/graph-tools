@@ -15,6 +15,7 @@ class Compose extends SizePropsBridge {
     assertIsDefined(container.flexDirection);
     const props = getProp(container.flexDirection);
     ObjectTyped.keys(props).forEach((prop) => {
+      // @ts-ignore
       this[prop] = props[prop];
     });
     container.children.forEach((item) => {

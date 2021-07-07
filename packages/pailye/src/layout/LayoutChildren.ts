@@ -3,8 +3,7 @@ import { inject, injectable } from 'inversify';
 import type { LayoutObject } from '../node';
 import type { StylePropertyMap } from '../style/styleMap';
 import { Deferred } from '../util';
-import { LayoutContext } from './layoutContext';
-import { CurrentLayoutContext } from './layoutEngine';
+import type { LayoutContext } from './layoutContext';
 import type { LayoutFragment } from './LayoutFragment';
 import type { ContextId, IntrinsicSizes, LayoutConstraints } from './types';
 import { LayoutTaskType } from './types';
@@ -16,9 +15,8 @@ export interface LayoutChildrenFactory {
 
 export const LayoutChildrenOptions = Symbol('LayoutChildrenOptions');
 export interface LayoutChildrenOptions {
-  name: string;
   node: LayoutObject;
-  contextId: ContextId;
+  context: LayoutContext;
 }
 
 @injectable()
@@ -27,24 +25,21 @@ export class LayoutChildren {
   node: LayoutObject;
   readonly styleMap: StylePropertyMap;
 
-  currentLayoutContext: LayoutContext;
+  layoutContext: LayoutContext;
 
-  constructor(
-    @inject(LayoutChildrenOptions) protected readonly options: LayoutChildrenOptions,
-    @inject(CurrentLayoutContext) protected readonly layoutContext: LayoutContext,
-  ) {
-    this.contextId = options.contextId;
+  constructor(@inject(LayoutChildrenOptions) protected readonly options: LayoutChildrenOptions) {
+    this.contextId = options.context.contextId;
     this.node = options.node;
     this.styleMap = options.node.getStyle();
-    this.currentLayoutContext = layoutContext;
+    this.layoutContext = options.context;
   }
 
   intrinsicSizes(): Promise<IntrinsicSizes> {
-    if (this.contextId !== this.currentLayoutContext.contextId) {
+    if (this.contextId !== this.layoutContext.contextId) {
       throw new Error('Invalid State: wrong layout context');
     }
     const deferred = new Deferred<IntrinsicSizes>();
-    this.currentLayoutContext.appendWorkTask({
+    this.layoutContext.appendWorkTask({
       layoutChild: this,
       taskType: LayoutTaskType.IntrinsicSizes,
       deferred,
@@ -53,15 +48,15 @@ export class LayoutChildren {
   }
 
   layoutNextFragment(constraints: LayoutConstraints): Promise<LayoutFragment> {
-    if (this.contextId !== this.currentLayoutContext.contextId) {
+    if (this.contextId !== this.layoutContext.contextId) {
       throw new Error('Invalid State: wrong layout context');
     }
 
-    if (this.currentLayoutContext.mode === LayoutTaskType.IntrinsicSizes) {
+    if (this.layoutContext.mode === LayoutTaskType.IntrinsicSizes) {
       throw new Error('Not Supported: cant call layoutNextFragment in intrinsicSizes');
     }
     const deferred = new Deferred<LayoutFragment>();
-    this.currentLayoutContext.appendWorkTask({
+    this.layoutContext.appendWorkTask({
       layoutConstraints: constraints,
       layoutChild: this,
       taskType: LayoutTaskType.Layout,

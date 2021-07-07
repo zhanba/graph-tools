@@ -59,6 +59,7 @@ export class Node extends ParsedNodeProperties {
     }
     const layout: Layout = { left: this.left || 0, top: this.top || 0, width, height };
     props.forEach((item) => {
+      // @ts-ignore
       layout[item] = this.config[item];
     });
     return layout;

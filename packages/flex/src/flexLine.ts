@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-loop-func */
 /* eslint-disable no-plusplus */
 /* eslint-disable no-param-reassign */
+// @ts-nocheck
 import { SizePropsBridge } from './util';
 import { getProp, parseSpaceBetween, exchangeFlexProp, parseMarginAuto, ObjectTyped } from './util';
 import type { Node } from './node';

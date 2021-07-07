@@ -1,9 +1,12 @@
 import { container } from '../inversify.config';
 import { LayoutEngine } from '../layout/layoutEngine';
+import type { LayoutFragment } from '../layout/LayoutFragment';
 import type { IntrinsicSizes } from '../layout/types';
+import { PropertyNameMap } from '../style/propertyName';
 import { StylePropertyMap } from '../style/styleMap';
+import type { CSSStyleValue, CSSUnitValue } from '../style/styleValue';
 import type { StyleProperty } from '../style/types';
-import type { ComputedLayout, MeasureFn } from './types';
+import type { MeasureFn } from './types';
 
 const layoutEngine = container.get(LayoutEngine);
 
@@ -28,6 +31,8 @@ export class LayoutObject {
 
   private internalIntrisicSizes?: LayoutObjectIntrinsicSizes;
 
+  private computedLayout?: LayoutFragment;
+
   get intrisicSizes() {
     return this.internalIntrisicSizes;
   }
@@ -38,10 +43,10 @@ export class LayoutObject {
 
   private measureFn?: MeasureFn;
 
-  constructor(style: StylePropertyMap) {
+  constructor(style?: StylePropertyMap) {
     // eslint-disable-next-line no-plusplus
     this.id = id++;
-    this.style = style;
+    this.style = style ?? new StylePropertyMap();
     this.parent = undefined;
     this.children = [];
     this.dirty = false;
@@ -80,7 +85,9 @@ export class LayoutObject {
     this.children.splice(index, 1, child);
   }
 
-  setStyle() {}
+  setStyle(property: StyleProperty, value: CSSStyleValue) {
+    this.style.set(property, value);
+  }
 
   getStyle(...properties: StyleProperty[]) {
     if (properties) {
@@ -93,6 +100,10 @@ export class LayoutObject {
     return this.style;
   }
 
+  getAllStyle() {
+    return this.style;
+  }
+
   markDirty() {
     this.dirty = true;
   }
@@ -101,7 +112,30 @@ export class LayoutObject {
     return this.dirty;
   }
 
-  computeLayout(size: { width?: number; height?: number }): ComputedLayout {
-    layoutEngine.layoutEntry();
+  private getSize() {
+    const width = this.style.get<CSSUnitValue>(PropertyNameMap.WIDTH).value;
+    const height = this.style.get<CSSUnitValue>(PropertyNameMap.HEIGHT).value;
+    return { width, height };
   }
+
+  computeLayout(): void {
+    const size = this.getSize();
+    layoutEngine.computeLayout(this, {
+      availableInlineSize: size.width,
+      availableBlockSize: size.height,
+      percentageInlineSize: size.width,
+      percentageBlockSize: size.height,
+      data: undefined,
+    });
+  }
+
+  setComputedLayout(computedLayout: LayoutFragment) {
+    this.computedLayout = computedLayout;
+  }
+
+  getComputedLayout() {
+    return this.computedLayout;
+  }
+
+  getAllComputedLayout() {}
 }

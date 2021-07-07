@@ -1,6 +1,6 @@
 export type ContextId = string;
 
-export const enum LayoutTaskType {
+export enum LayoutTaskType {
   Layout = 'layout',
   IntrinsicSizes = 'intrinsic-sizes',
 }
@@ -33,25 +33,26 @@ export interface IntrinsicSizes {
   readonly maxContentBlockSize: number;
 }
 
-enum BlockFragmentationType {
-  'none',
-  'page',
-  'column',
-  'region',
-}
-
 export interface LayoutConstraints<T = void> {
+  /**
+   * the available space the current layout must respect
+   */
   readonly availableInlineSize: number;
   readonly availableBlockSize: number;
 
+  /**
+   * require current layout must to be exact size
+   */
   readonly fixedInlineSize?: number;
   readonly fixedBlockSize?: number;
 
+  /**
+   * used to resolve percentage value
+   * Web developers should resolve any percentages against the percentage sizes.
+   * eg. `const value = constraints.percentageInlineSize * 0.5;`
+   */
   readonly percentageInlineSize: number;
   readonly percentageBlockSize: number;
-
-  readonly blockFragmentationOffset?: number;
-  readonly blockFragmentationType: BlockFragmentationType;
 
   readonly data: T;
 }

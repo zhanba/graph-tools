@@ -112,13 +112,13 @@ describe('Graph', () => {
 
     test('only includes nodes for which the filter returns true', () => {
       g.setNodes(['a', 'b']);
-      const g2 = g.filterNodes(v => v === 'a');
+      const g2 = g.filterNodes((v) => v === 'a');
       expect(g2.nodes()).toEqual(['a']);
     });
 
     test('removes edges that are connected to removed nodes', () => {
       g.setEdge('a', 'b');
-      const g2 = g.filterNodes(v => v === 'a');
+      const g2 = g.filterNodes((v) => v === 'a');
       expect(_.sortBy(g2.nodes())).toEqual(['a']);
       expect(g2.edges()).toEqual([]);
     });
@@ -170,7 +170,7 @@ describe('Graph', () => {
       g2.setParent('a', 'parent');
       g2.setParent('parent', 'root');
 
-      const g3 = g2.filterNodes(v => v !== 'parent');
+      const g3 = g2.filterNodes((v) => v !== 'parent');
       expect(g3.parent('a')).toEqual('root');
     });
   });
@@ -264,7 +264,7 @@ describe('Graph', () => {
     });
 
     test("can take a function that takes the node's name", () => {
-      g.setDefaultNodeLabel(v => `${v}-foo`);
+      g.setDefaultNodeLabel((v) => `${v}-foo`);
       g.setNode('a');
       expect(g.node('a')).toBe('a-foo');
     });
@@ -738,7 +738,7 @@ describe('Graph', () => {
 
     test("can take a function that takes the edge's endpoints and name", () => {
       const g2 = new Graph({ multigraph: true });
-      g2.setDefaultEdgeLabel((v: any, w: any, name: any) => {
+      g2.setDefaultEdgeLabel((v: string, w: string, name: string) => {
         return `${v}-${w}-${name}-foo`;
       });
       g2.setEdge({ v: 'a', w: 'b', name: 'name' });
